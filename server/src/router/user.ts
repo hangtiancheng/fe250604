@@ -1,5 +1,6 @@
 import Router from "@koa/router";
 import { login, logout, register, updatePwd, updateUserInfo } from "../service/user.js";
+import auth from "../utils/auth.js";
 import type { AppContext } from "../types.js";
 
 const router = new Router<unknown, AppContext>();
@@ -14,6 +15,6 @@ export default function createUserRouter(): Router<unknown, AppContext> {
   // /api/v1/user/update-pwd
   router.post("/update-pwd", updatePwd);
   // /api/v1/user/update-info
-  router.post("/update-info", updateUserInfo);
+  router.post("/update-info", auth, updateUserInfo);
   return router;
 }

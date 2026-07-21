@@ -50,6 +50,8 @@ export function getFileType(extName: string): "video" | "image" | "file" {
     case "flv":
     case "mov":
     case "mp4":
+    case "mpeg":
+    case "wmv":
       return "video";
 
     case "gif":

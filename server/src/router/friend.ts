@@ -8,6 +8,7 @@ import {
   findFriendById,
   findFriendListByEmail,
   updateFriend,
+  deleteFriend,
 } from "../service/friend.js";
 import type { AppContext } from "../types.js";
 
@@ -28,5 +29,7 @@ export default function createFriendRouter(): Router<unknown, AppContext> {
   router.post("/add-tag", auth, addTag);
   // /api/v1/friend/update
   router.post("/update", auth, updateFriend);
+  // /api/v1/friend/delete
+  router.delete("/delete", auth, deleteFriend);
   return router;
 }

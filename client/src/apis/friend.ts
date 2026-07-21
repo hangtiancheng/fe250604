@@ -46,3 +46,8 @@ export async function updateFriendApi(friendDto: IUpdateFriendDto) {
   const res = await request.post<IUpdateFriendDto>('friend/update', friendDto);
   return res.data;
 }
+
+export async function deleteFriendApi(friendId: number) {
+  const res = await request.delete(`/friend/delete?id=${friendId}`);
+  return res.data;
+}

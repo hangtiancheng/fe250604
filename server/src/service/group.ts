@@ -63,43 +63,49 @@ export async function createGroup(ctx: AppContext): Promise<void> {
   }
   try {
     const roomKey = uuid();
-    const [insertId] = await db("groups").insert({
-      name: groupName,
-      avatar: groupAvatar,
-      readme,
-      room_key: roomKey,
-      creator_id: userInfo.id,
-      unread_cnt: 0,
+    memberList.push({
+      userId: userInfo.id,
+      email: userInfo.email,
+      avatar: userInfo.avatar,
     });
-    if (insertId) {
-      await Promise.all([
-        db("messages").insert({
-          sender_id: userInfo.id,
-          receiver_id: Number(insertId),
-          type: "group",
-          media_type: "text",
-          state: 0,
-          content: "欢迎",
-          room_key: roomKey,
-        }),
-        db("msg_stats").insert({ room_key: roomKey, total: 1 }),
-      ]);
-
-      memberList.push({
-        userId: userInfo.id,
-        email: userInfo.email,
-        avatar: userInfo.avatar,
+    const usernameWraps = await db<{ id: number; username: string | null }>("users")
+      .select("id", "username")
+      .whereIn(
+        "id",
+        memberList.map((item) => item.userId),
+      );
+    const id2username = new Map(usernameWraps.map((item) => [item.id, item.username]));
+    await db.transaction(async (trx) => {
+      const [insertId] = await trx("groups").insert({
+        name: groupName,
+        avatar: groupAvatar,
+        readme,
+        room_key: roomKey,
+        creator_id: userInfo.id,
+        unread_cnt: 0,
       });
-      for (const member of memberList) {
-        await db("group_members").insert({
+      await trx("messages").insert({
+        sender_id: userInfo.id,
+        receiver_id: Number(insertId),
+        type: "group",
+        media_type: "text",
+        state: 0,
+        content: "欢迎",
+        room_key: roomKey,
+      });
+      await trx("msg_stats").insert({ room_key: roomKey, total: 1 });
+      await trx("group_members").insert(
+        memberList.map((member) => ({
           group_id: Number(insertId),
           user_id: member.userId,
-          nickname: member.email,
-        });
-        pub({ receiverEmail: member.email, type: "wsFetchGroupList" });
-      }
-      resOk(ctx);
+          nickname: id2username.get(member.userId) || member.email,
+        })),
+      );
+    });
+    for (const member of memberList) {
+      pub({ receiverEmail: member.email, type: "wsFetchGroupList" });
     }
+    resOk(ctx);
   } catch (err) {
     console.error(err);
     resErr(ctx, BASE_STATE.ServerErr);
@@ -134,10 +140,6 @@ export async function findGroupByName(ctx: AppContext): Promise<void> {
     return;
   }
   const { name } = result.data;
-  if (!name) {
-    resErr(ctx, BASE_STATE.ParamErr);
-    return;
-  }
   try {
     const groupWraps = await db<GroupRecord>("groups")
       .select("*")
@@ -251,11 +253,18 @@ export async function addFriends2group(ctx: AppContext): Promise<void> {
       resErr(ctx, GROUP_STATE.FriendJoined);
       return;
     }
+    const usernameWraps = await db<{ id: number; username: string | null }>("users")
+      .select("id", "username")
+      .whereIn(
+        "id",
+        filteredList.map((item) => item.userId),
+      );
+    const id2username = new Map(usernameWraps.map((item) => [item.id, item.username]));
     await db("group_members").insert(
       filteredList.map((item) => ({
         group_id: groupId,
         user_id: item.userId,
-        nickname: item.email,
+        nickname: id2username.get(item.userId) || item.email,
       })),
     );
     for (const item of filteredList) {

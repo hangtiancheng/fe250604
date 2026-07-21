@@ -6,6 +6,7 @@ import {
   AddFriendSchema,
   AddTagSchema,
   UpdateFriendSchema,
+  DeleteFriendQuerySchema,
 } from "../schema/index.js";
 import { resErr, resOk } from "../utils/res.js";
 import { v4 as uuid } from "uuid";
@@ -32,19 +33,6 @@ async function selectFriendsByUserId(userId: number): Promise<Record<string, unk
       retList.push(...camelItems);
     }
     return retList;
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-}
-
-async function insertFriend(friendItem: Record<string, unknown>): Promise<void> {
-  friendItem = camel2snake(friendItem);
-  try {
-    const ids = await db("friends").insert(friendItem);
-    if (!Array.isArray(ids) || ids.length !== 1) {
-      throw new Error("affectedRows !== 1");
-    }
   } catch (err) {
     console.error(err);
     throw err;
@@ -96,30 +84,31 @@ export async function addFriend(ctx: AppContext): Promise<void> {
   const { id, email, avatar } = result.data;
   try {
     const roomKey = uuid();
-    const [senderIds, receiverIds] = await Promise.all([
+    const [senderIds, receiverIds, receiver] = await Promise.all([
       db<{ id: number }>("tags").select("id").where("user_id", sender.id),
       db<{ id: number }>("tags").select("id").where("user_id", id),
+      db<{ username: string | null }>("users").select("username").where("id", id).first(),
     ]);
-    await Promise.all([
-      insertFriend({
+    await db.transaction(async (trx) => {
+      await trx("friends").insert({
         user_id: id,
         email,
         avatar,
         state: global.__online_users__[email] ? "online" : "offline",
-        note_name: email,
+        note_name: receiver?.username || email,
         tag_id: senderIds[0].id,
         room_key: roomKey,
-      }),
-      insertFriend({
+      });
+      await trx("friends").insert({
         user_id: sender.id,
         email: sender.email,
         avatar: sender.avatar,
         state: global.__online_users__[sender.email] ? "online" : "offline",
-        note_name: sender.email,
+        note_name: sender.username || sender.email,
         tag_id: receiverIds[0].id,
         room_key: roomKey,
-      }),
-    ]);
+      });
+    });
     pub({ receiverEmail: email, type: "wsFetchFriendList" });
     pub({ receiverEmail: sender.email, type: "wsFetchFriendList" });
     resOk(ctx);
@@ -177,10 +166,6 @@ export async function findFriendById(ctx: AppContext): Promise<void> {
     return;
   }
   const { id } = result.data;
-  if (!id) {
-    resErr(ctx, BASE_STATE.ParamErr);
-    return;
-  }
   try {
     const friendInfoWrap = await db("friends as f")
       .join("users as u", "f.user_id", "u.id")
@@ -245,6 +230,41 @@ export async function addTag(ctx: AppContext): Promise<void> {
   }
 }
 
+export async function deleteFriend(ctx: AppContext): Promise<void> {
+  const sender = ctx.userInfo;
+  const result = DeleteFriendQuerySchema.safeParse(ctx.query);
+  if (!sender || !result.success) {
+    resErr(ctx, BASE_STATE.ParamErr);
+    return;
+  }
+  const { id } = result.data;
+  try {
+    const friend = await db<FriendRecord>("friends").select("*").where("id", Number(id)).first();
+    if (!friend) {
+      resErr(ctx, BASE_STATE.ParamErr);
+      return;
+    }
+    const { room_key: roomKey, email: friendEmail } = friend;
+    await db.transaction(async (trx) => {
+      if (roomKey) {
+        await trx("friends").where("room_key", roomKey).del();
+        await trx("messages").where("room_key", roomKey).del();
+        await trx("msg_stats").where("room_key", roomKey).del();
+      } else {
+        await trx("friends").where("id", Number(id)).del();
+      }
+    });
+    pub({ receiverEmail: friendEmail, type: "wsFetchFriendList" });
+    pub({ receiverEmail: sender.email, type: "wsFetchFriendList" });
+    pub({ receiverEmail: friendEmail, type: "wsFetchChatList" });
+    pub({ receiverEmail: sender.email, type: "wsFetchChatList" });
+    resOk(ctx);
+  } catch (err) {
+    console.error(err);
+    resErr(ctx, BASE_STATE.ServerErr);
+  }
+}
+
 export async function updateFriend(ctx: AppContext): Promise<void> {
   const result = UpdateFriendSchema.safeParse(ctx.request.body);
   if (!result.success) {
@@ -252,10 +272,19 @@ export async function updateFriend(ctx: AppContext): Promise<void> {
     return;
   }
   const { friendId, noteName, tagId } = result.data;
+  const updateFields: Record<string, unknown> = {};
+  if (noteName !== undefined) {
+    updateFields.note_name = noteName;
+  }
+  if (tagId !== undefined) {
+    updateFields.tag_id = tagId;
+  }
+  if (Object.keys(updateFields).length === 0) {
+    resErr(ctx, BASE_STATE.ParamErr);
+    return;
+  }
   try {
-    const affectedRows = await db("friends")
-      .where("id", friendId)
-      .update({ note_name: noteName, tag_id: tagId });
+    const affectedRows = await db("friends").where("id", friendId).update(updateFields);
     if (affectedRows === 1) {
       resOk(ctx);
     } else {

@@ -108,6 +108,7 @@ export async function createRtc(ws: WebSocket, url: string): Promise<void> {
           }
 
           if (!receiverList) {
+            console.error(`[rtc] createRtcRoom missing receiverList, sender: ${email}`);
             return;
           }
 
@@ -181,16 +182,15 @@ export async function createRtc(ws: WebSocket, url: string): Promise<void> {
           }
           break;
 
-        default:
-          broadcast(
-            email,
-            roomKey,
-            { cmd: RtcCmd.Reject, data: msgObj.data, sender: email },
-            false,
-          );
+        case RtcCmd.Reject:
+          broadcast(email, roomKey, { cmd: RtcCmd.Reject, sender: email }, false);
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete global.__rtc_rooms__[roomKey][email];
           global.__online_users__[email].state = false;
+          break;
+
+        default:
+          console.warn(`unknown rtc cmd: ${String(msgObj.cmd)}`);
           break;
       }
     });

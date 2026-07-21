@@ -31,13 +31,15 @@ export const CreateGroupSchema = z.object({
   groupName: z.string().min(1),
   groupAvatar: z.string().min(1),
   readme: z.string().optional(),
-  memberList: z.array(
-    z.object({
-      userId: z.number(),
-      email: z.email(),
-      avatar: z.string(),
-    }),
-  ),
+  memberList: z
+    .array(
+      z.object({
+        userId: z.number(),
+        email: z.email(),
+        avatar: z.string(),
+      }),
+    )
+    .min(1),
 });
 
 export const AddFriends2GroupSchema = z.object({
@@ -55,11 +57,11 @@ export const AddSelf2GroupSchema = z.object({
 });
 
 export const FindFriendByEmailSchema = z.object({
-  email: z.email(),
+  email: z.string().min(1),
 });
 
 export const FindFriendByIdQuerySchema = z.object({
-  id: z.string().min(1).optional(),
+  id: z.string().min(1),
 });
 
 export const AddFriendSchema = z.object({
@@ -69,6 +71,8 @@ export const AddFriendSchema = z.object({
 });
 
 export const AddTagSchema = z.object({
+  userId: z.number().int().positive(),
+  userEmail: z.email(),
   name: z.string().min(1),
 });
 
@@ -123,16 +127,16 @@ export const RtcMessageSchema = z.object({
 });
 
 export const FetchGroupMembersQuerySchema = z.object({
-  groupId: z.string().min(1).optional(),
-  roomKey: z.string().min(1).optional(),
+  groupId: z.string().min(1),
+  roomKey: z.string().min(1),
 });
 
 export const SearchGroupByNameQuerySchema = z.object({
-  name: z.string().min(1).optional(),
+  name: z.string().min(1),
 });
 
 export const DeleteFriendQuerySchema = z.object({
-  id: z.string().min(1).optional(),
+  id: z.string().min(1),
 });
 
 export const ChatMessageSchema = z.object({

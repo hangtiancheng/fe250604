@@ -64,7 +64,7 @@ async function sliceFile(file: File, baseChunkSize: number) {
       sparkMd5arrBuf.append(arrayBuffer as ArrayBuffer);
       doneCnt++;
 
-      if (chunkList.length >= 10) {
+      if (chunkList.length >= 20) {
         workerMsg.msgType = 'progress';
         self.postMessage(workerMsg);
         // 清空数组

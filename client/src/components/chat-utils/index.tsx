@@ -85,7 +85,7 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
     }
     setIsLoading(true);
     const file = ev.target.files[0];
-    if (file.size > 10 * 1024 * 1024 * 1024) {
+    if (file.size > 2 * 1024 * 1024 * 1024) {
       toast.error('文件大小不能超过 2G');
       setIsLoading(false);
       return;

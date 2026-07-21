@@ -1,10 +1,10 @@
 import useToast from '@/hooks/use-toast';
 import useTokenStore from '@/store/token';
 import useUserInfoStore from '@/store/user-info';
+import useViewStore from '@/store/view';
 import { decrypt, encrypt, genRandStr } from '@/utils/auth';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router';
 import { loginApi } from '@/apis/user';
 import { BaseState } from '@/utils/constants';
 import { IUserInfo } from '@/types/user';
@@ -15,8 +15,8 @@ import styles from './index.module.scss';
 const Login: React.FC = () => {
   const tokenStore = useTokenStore();
   const userInfoStore = useUserInfoStore();
+  const viewStore = useViewStore();
 
-  const navigate = useNavigate();
   const toast = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -49,6 +49,8 @@ const Login: React.FC = () => {
       return { userInfo, token };
     } catch (err) {
       console.trace(err);
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
       return null;
     }
   }
@@ -60,7 +62,7 @@ const Login: React.FC = () => {
       tokenStore.setToken(ret.token);
       userInfoStore.setUserInfo(ret.userInfo);
       toast.success('登录成功');
-      return navigate('/');
+      return viewStore.setView('home');
     }
     setIsLoading(true);
     const reqData = { email, password };
@@ -74,21 +76,17 @@ const Login: React.FC = () => {
       if (isRemember) {
         writeLocal(token, userInfo);
       }
-      return navigate('/');
+      return viewStore.setView('home');
     }
-    toast.error('登录失败');
+    toast.error(res.msg || '登录失败');
     setIsLoading(false);
   };
 
   const handleRemember = () => {
     const newIsRemember = !isRemember;
     setRemember(newIsRemember); // 异步
-    if (newIsRemember) {
-      localStorage.setItem('isRemember', `${newIsRemember}`);
-      localStorage.setItem('token', tokenStore.token);
-      localStorage.setItem('userInfo', JSON.stringify(userInfoStore.userInfo));
-    } else {
-      // localStorage.clear()
+    localStorage.setItem('isRemember', `${newIsRemember}`);
+    if (!newIsRemember) {
       localStorage.removeItem('token');
       localStorage.removeItem('userInfo');
     }
@@ -152,8 +150,7 @@ const Login: React.FC = () => {
                 登录
               </Button>
               <div className="">
-                {/* <Link to="/register">没有账号? 去注册</Link> */}
-                <NavLink to="/register">没有账号? 去注册</NavLink>
+                <a onClick={() => viewStore.setView('register')}>没有账号? 去注册</a>
               </div>
             </div>
           </Form.Item>

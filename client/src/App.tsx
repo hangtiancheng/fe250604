@@ -1,32 +1,28 @@
 import zhCN from 'antd/es/locale/zh_CN';
-import { /** BrowserRouter */ RouterProvider } from 'react-router';
-import { App as AntdApp } from 'antd';
-import { router } from './router/router';
+import { App as AntdApp, ConfigProvider } from 'antd';
+import useViewStore from './store/view';
+import useTokenStore from './store/token';
+import Login from './pages/login';
+import Register from './pages/register';
+import Home from './pages/home';
 
-import { ConfigProvider } from 'antd';
-// import RouterPage from './router';
 export default function App() {
-  return (
-    // <BrowserRouter>
-    //   {/* 注册全局样式 */}
-    //   <ConfigProvider
-    //     theme={{
-    //       token: {
-    //         colorPrimary: '#8bc34a',
-    //         borderRadius: 16,
-    //       },
-    //       components: {
-    //         Tree: { indentSize: 0 },
-    //       },
-    //     }}
-    //     locale={zhCN}
-    //   >
-    //     <AntdApp>
-    //       <RouterPage />
-    //     </AntdApp>
-    //   </ConfigProvider>
-    // </BrowserRouter>
+  const view = useViewStore((state) => state.view);
+  const token = useTokenStore((state) => state.token);
 
+  let page: React.ReactNode;
+  switch (view) {
+    case 'register':
+      page = <Register />;
+      break;
+    case 'home':
+      page = token ? <Home /> : <Login />;
+      break;
+    default:
+      page = <Login />;
+  }
+
+  return (
     <ConfigProvider
       theme={{
         token: {
@@ -39,9 +35,7 @@ export default function App() {
       }}
       locale={zhCN}
     >
-      <AntdApp>
-        <RouterProvider router={router} />
-      </AntdApp>
+      <AntdApp>{page}</AntdApp>
     </ConfigProvider>
   );
 }

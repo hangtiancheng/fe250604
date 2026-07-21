@@ -2,13 +2,13 @@ import { logoutApi } from '@/apis/user';
 import ImgContainer from '@/components/img-container';
 import useToast from '@/hooks/use-toast';
 import useUserInfoStore from '@/store/user-info';
+import useViewStore from '@/store/view';
 
 import type { IChatRef, IContactRef } from '@/types/fc-expose';
 import { BaseState } from '@/utils/constants';
 
 import { Button, Popover, Tooltip } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { IconItem, MenuIconKey, MenuIconList } from '@/utils/icons';
 
 import Chat from '../chat';
@@ -24,7 +24,7 @@ import { ICallReceiver } from '@/types/chat';
 
 const Home: React.FC = () => {
   const toast = useToast();
-  const navigate = useNavigate();
+  const viewStore = useViewStore();
   const userInfoStore = useUserInfoStore();
   const userInfo = userInfoStore.userInfo;
 
@@ -66,7 +66,7 @@ const Home: React.FC = () => {
       }
       userInfoStore.clearUserInfo();
       toast.success('退出登录成功');
-      navigate('/login');
+      viewStore.setView('login');
       if (webSocket.current !== null) {
         // 关闭 websocket 连接
         webSocket.current.close();
@@ -133,6 +133,9 @@ const Home: React.FC = () => {
           // mode: "friendAudio" | "friendVideo" | "groupAudio" | "groupVideo";
           try {
             const { receiverList, roomKey, mode } = msg;
+            if (!mode) {
+              console.error('[ws] wsCreateRtcRoom missing mode, fallback to group:', msg);
+            }
             setCallReceiverList(receiverList);
             setRtcMode(mode);
             setRoomKey(roomKey);
@@ -155,19 +158,13 @@ const Home: React.FC = () => {
 
   const handleClickIcon = (item: IconItem) => {
     setCurIconKey(item.key as MenuIconKey);
-    switch (item.key) {
-      case 'MessageEmoji':
-        return navigate('/chat');
-      case 'AddressBook':
-        return navigate('/contact');
-      case 'Power':
-        return logout();
+    if (item.key === 'Power') {
+      logout();
     }
   };
 
   const doChat = (chat: IFriendExt | IGroupExt) => {
     setCurIconKey('MessageEmoji');
-    navigate('/chat');
     setCurChat(chat);
   };
 

@@ -9,7 +9,7 @@
     "dev": "rollup -c ./rollup.config.js -w",
     "dev:watch": "concurrently \"rollup -c -w\" \"node ./dist/index.js --watch ./src\"",
     "lint": "eslint . --fix",
-    "format": "prettier --write ./"
+    "format": "prettier -w ./"
   },
   "keywords": [],
   "author": "",

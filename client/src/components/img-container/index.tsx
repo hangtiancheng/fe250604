@@ -17,7 +17,7 @@ export default function ImgContainer(props: IProps) {
     <img
       src={src}
       onError={(ev) => {
-        ev.currentTarget.src = genBase64();
+        ev.currentTarget.src = genBase64(props.src);
       }}
       alt={alt ?? 'img'}
       className={`${className}`}

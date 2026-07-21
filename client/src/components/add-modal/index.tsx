@@ -128,7 +128,7 @@ const AddModal: React.FC<IProps> = (props: IProps) => {
         <div>
           <div className="flex items-center justify-between gap-5">
             <Input
-              placeholder="请输入好友的用户名"
+              placeholder="请输入好友的邮箱"
               prefix={<Search theme="outline" size="24" fill="#333" />}
               onChange={(ev) => handleChangeFriendName(ev)}
             />

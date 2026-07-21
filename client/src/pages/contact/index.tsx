@@ -4,11 +4,12 @@ import useUserInfoStore from '@/store/user-info';
 import type { IFriendExt, ITaggedFriends } from '@/types/friend';
 import type { IGroupExt, IGroupItem } from '@/types/group';
 import type { ITagItem } from '@/types/friend';
-import { Button, Empty, Form, Input, Modal, Select, Tabs, TabsProps, Tooltip } from 'antd';
+import { Button, Empty, Form, Input, Modal, Popconfirm, Select, Tabs, TabsProps, Tooltip } from 'antd';
 import { useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import ImgContainer from '@/components/img-container';
 import {
   addTagApi,
+  deleteFriendApi,
   fetchFriendByIdApi,
   fetchFriendListApi,
   fetchTagListApi,
@@ -216,6 +217,26 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
         toast.error('更新好友详情失败');
       }
     });
+  };
+
+  // 删除好友
+  const deleteFriend_ = async () => {
+    if (!curFriend) {
+      return;
+    }
+    try {
+      const res = await deleteFriendApi(curFriend.friendId);
+      if (res.code === BaseState.Ok) {
+        toast.success('删除好友成功');
+        setCurFriend(null);
+        fetchFriendList();
+      } else {
+        toast.error('删除好友失败');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('删除好友失败');
+    }
   };
 
   // 新建标签
@@ -482,6 +503,18 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
                   </Form.Item>
                 </Form>
                 <div className="mt-12 flex justify-center gap-8 border-t border-gray-100 pt-8">
+                  <Popconfirm
+                    title="删除好友"
+                    description="确定删除吗?"
+                    okText="删除"
+                    cancelText="取消"
+                    okButtonProps={{ danger: true }}
+                    onConfirm={deleteFriend_}
+                  >
+                    <Button danger size="large" className="w-32">
+                      删除好友
+                    </Button>
+                  </Popconfirm>
                   <Button
                     size="large"
                     className="hover:text-theme5 hover:border-theme5 w-32"

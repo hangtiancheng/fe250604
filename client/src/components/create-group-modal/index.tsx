@@ -239,8 +239,8 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
             <Form.Item rules={[{ required: true, message: '请输入群聊名' }]} name="groupName">
               <Input maxLength={15} showCount={true} placeholder="请输入群聊名" />
             </Form.Item>
-            <Form.Item rules={[{ required: true, message: '请输入群公告' }]} name="readme">
-              <Input maxLength={30} showCount={true} placeholder="请输入群公告" />
+            <Form.Item name="readme">
+              <Input maxLength={30} showCount={true} placeholder="请输入群公告 (可选)" />
             </Form.Item>
             <Form.Item>
               <Button onClick={() => switchStep(1)}>上一步</Button>

@@ -37,7 +37,7 @@ export async function login(ctx: AppContext): Promise<void> {
     }
 
     // 解盐
-    const { id, password: saltedPwd, username, avatar, signature } = user;
+    const { id, password: saltedPwd, username, avatar, signature, created_at } = user;
     const [salt, encodedPwd] = saltedPwd.split("$");
     const encodedPwd2 = createHash("md5")
       .update(salt + password)
@@ -47,12 +47,20 @@ export async function login(ctx: AppContext): Promise<void> {
       return;
     }
 
+    if (global.__online_users__[email]) {
+      resErr(ctx, USER_STATE.UserLoggedIn);
+      return;
+    }
+
     // 签发令牌
-    const userInfo = { id, email, password: saltedPwd, username, avatar, signature };
+    const createdAt = new Date(created_at)
+      .toLocaleString("zh-CN", { hour12: false })
+      .replace(/\//g, "-");
+    const userInfo = { id, email, password: saltedPwd, username, avatar, signature, createdAt };
     const token = jwt.sign(userInfo, secretKey);
     await Promise.all([
       db("friends").where("email", email).update({ state: "online" }),
-      redis.set(`token:${email}`, token, "EX", 60 * 60 * 24),
+      redis.set(`token:${email}`, token, "EX", 60 * 60 * 24 * 14),
     ]);
 
     resOk(ctx, { token, userInfo });
@@ -116,7 +124,11 @@ export async function register(ctx: AppContext): Promise<void> {
     const [id] = await db("users").insert(userInfo);
     await db("tags").insert({ user_id: Number(id), user_email: email, name: "好友" });
 
-    const userInfoWithId = { ...userInfo, id: Number(id) };
+    const userInfoWithId = {
+      ...userInfo,
+      id: Number(id),
+      createdAt: new Date().toLocaleString("zh-CN", { hour12: false }).replace(/\//g, "-"),
+    };
     const token = jwt.sign(userInfoWithId, secretKey);
     resOk(ctx, { token, userInfo: userInfoWithId });
   } catch (err) {
@@ -181,12 +193,15 @@ export async function updateUserInfo(ctx: AppContext): Promise<void> {
       resErr(ctx, BASE_STATE.UpdateErr);
       return;
     }
-    const { id, password: saltedPwd, updated_at } = user;
+    const { id, password: saltedPwd, updated_at, created_at } = user;
     userInfo.id = id;
     userInfo.password = saltedPwd;
     userInfo.updatedAt = updated_at;
+    userInfo.createdAt = new Date(created_at)
+      .toLocaleString("zh-CN", { hour12: false })
+      .replace(/\//g, "-");
     const token = jwt.sign(userInfo, secretKey);
-    await redis.set(`token:${email}`, token, "EX", 60 * 60 * 24);
+    await redis.set(`token:${email}`, token, "EX", 60 * 60 * 24 * 14);
     resOk(ctx, { token, userInfo });
   } catch (err) {
     console.error(err);

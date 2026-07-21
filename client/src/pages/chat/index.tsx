@@ -74,6 +74,11 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
 
   const connWs = (params: { roomKey: string; senderId: number; type: string }) => {
     const { roomKey, senderId, type } = params;
+    // 关闭旧连接
+    if (socket.current) {
+      socket.current.close();
+      socket.current = null;
+    }
     const ws = new WebSocket(
       `${import.meta.env.VITE_WS_BASE_URL}/chat/conn?roomKey=${roomKey}&id=${senderId}&type=${type}`,
     );

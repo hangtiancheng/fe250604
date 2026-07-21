@@ -1,9 +1,9 @@
 import { registerApi } from '@/apis/user';
 import useToast from '@/hooks/use-toast';
+import useViewStore from '@/store/view';
 import { ILoginParams } from '@/types/user';
 import { BaseState } from '@/utils/constants';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
 
 import styles from './index.module.scss';
 import { Button, Form, Input } from 'antd';
@@ -11,7 +11,7 @@ import { genBase64 } from '@/utils/img';
 
 export default function Register() {
   type RegisterForm = ILoginParams & { confirmPwd: string };
-  const navigate = useNavigate();
+  const viewStore = useViewStore();
   const toast = useToast();
   const [registerFormInst] = Form.useForm<RegisterForm>();
 
@@ -27,12 +27,12 @@ export default function Register() {
       const reqData = {
         email,
         password,
-        avatar: genBase64(),
+        avatar: genBase64(email),
       };
       const res = await registerApi(reqData);
       if (res.code === BaseState.Ok) {
         toast.success('注册成功');
-        navigate('/login');
+        viewStore.setView('login');
       } else {
         toast.error(res.msg);
       }
@@ -84,7 +84,7 @@ export default function Register() {
                 注册
               </Button>
               <div className="">
-                <Link to="/login">已有账号? 去登录</Link>
+                <a onClick={() => viewStore.setView('login')}>已有账号? 去登录</a>
               </div>
             </div>
           </Form.Item>

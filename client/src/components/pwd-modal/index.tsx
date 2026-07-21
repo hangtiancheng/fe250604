@@ -1,10 +1,10 @@
 import { logoutApi, updatePwdApi } from '@/apis/user';
 import useToast from '@/hooks/use-toast';
 import useUserInfoStore from '@/store/user-info';
+import useViewStore from '@/store/view';
 import { BaseState } from '@/utils/constants';
 import { Button, Form, Input, Modal } from 'antd';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 
 interface IProps {
   mountModal: boolean;
@@ -14,7 +14,7 @@ interface IProps {
 const PwdModal: React.FC<IProps> = (props: IProps) => {
   const { mountModal, setMountModal } = props;
   const toast = useToast();
-  const navigate = useNavigate();
+  const viewStore = useViewStore();
   const userInfoStore = useUserInfoStore();
   const userInfo = userInfoStore.userInfo;
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -35,7 +35,7 @@ const PwdModal: React.FC<IProps> = (props: IProps) => {
       localStorage.removeItem('token');
       localStorage.removeItem('userInfo');
       toast.success('登录已过期, 请重新登录');
-      navigate('/login');
+      viewStore.setView('login');
     } catch (err) {
       console.error(err);
       toast.error('退出登录失败');
