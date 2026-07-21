@@ -1,18 +1,18 @@
-import { fetchChatListApi } from '@/apis/chat';
-import ChatMsg from '@/components/chat-msg';
-import ChatUtils from '@/components/chat-utils';
-import ImgContainer from '@/components/img-container';
-import SearchBar from '@/components/search-bar';
-import useToast from '@/hooks/use-toast';
-import useUserInfoStore from '@/store/user-info';
-import { IChatItem, IMsg, ISendMsg } from '@/types/chat';
-import { IFriendExt } from '@/types/friend';
-import { IGroupExt } from '@/types/group';
-import { BaseState } from '@/utils/constants';
-import { fmtTime4list } from '@/utils/fmt';
-import { MessageEmoji } from '@icon-park/react';
-import { Empty } from 'antd';
-import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { fetchChatListApi } from "@/apis/chat";
+import ChatMsg from "@/components/chat-msg";
+import ChatUtils from "@/components/chat-utils";
+import ImgContainer from "@/components/img-container";
+import SearchBar from "@/components/search-bar";
+import useToast from "@/hooks/use-toast";
+import useUserInfoStore from "@/store/user-info";
+import { IChatItem, IMsg, ISendMsg } from "@/types/chat";
+import { IFriendExt } from "@/types/friend";
+import { IGroupExt } from "@/types/group";
+import { BaseState } from "@/utils/constants";
+import { fmtTime4list } from "@/utils/fmt";
+import { MessageEmoji } from "@icon-park/react";
+import { Empty } from "antd";
+import { useEffect, useImperativeHandle, useRef, useState } from "react";
 
 export interface IChatRef {
   fetchChatList: () => void; // 刷新消息列表
@@ -24,10 +24,10 @@ interface IProps {
 }
 
 const friendOrGroup = (item: IFriendExt | IGroupExt): item is IFriendExt =>
-  'friendId' in item && item.friendId !== undefined;
+  "friendId" in item && item.friendId !== undefined;
 
 const friendOrGroup2 = (item: IChatItem): item is IChatItem =>
-  'receiverEmail' in item && item.receiverEmail !== undefined;
+  "receiverEmail" in item && item.receiverEmail !== undefined;
 
 const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
   const toast = useToast();
@@ -44,8 +44,8 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
 
   const handleMouseDown = () => {
     isDraggingRef.current = true;
-    document.body.style.cursor = 'row-resize';
-    document.body.style.userSelect = 'none';
+    document.body.style.cursor = "row-resize";
+    document.body.style.userSelect = "none";
   };
 
   useEffect(() => {
@@ -58,17 +58,17 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
     const handleMouseUp = () => {
       if (isDraggingRef.current) {
         isDraggingRef.current = false;
-        document.body.style.cursor = 'default';
-        document.body.style.userSelect = 'auto';
+        document.body.style.cursor = "default";
+        document.body.style.userSelect = "auto";
       }
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
 
@@ -87,12 +87,14 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
       const msgData = JSON.parse(ev.data);
       if (Array.isArray(msgData)) {
         setHistoryMsgList(msgData);
+      } else if (msgData.code !== undefined) {
+        toast.error(msgData.msg || "会话失效");
       } else {
         setNewMsgList((oldMsgList) => [...oldMsgList, msgData]);
       }
     };
 
-    ws.onerror = () => toast.error('网络连接失败');
+    ws.onerror = () => toast.error("网络连接失败");
     socket.current = ws;
   };
 
@@ -102,11 +104,11 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
       if (res.code === BaseState.Ok) {
         setChatList(res.data);
       } else {
-        toast.error('获取聊天列表失败');
+        toast.error("获取聊天列表失败");
       }
     } catch (err) {
       console.error(err);
-      toast.error('获取聊天列表失败');
+      toast.error("获取聊天列表失败");
     }
   };
 
@@ -115,7 +117,7 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
       try {
         const res = await fetchChatListApi();
         if (res.code !== BaseState.Ok) {
-          toast.error('获取聊天列表失败');
+          toast.error("获取聊天列表失败");
           return;
         }
         // res.code === BaseState.Ok
@@ -129,12 +131,12 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
             // targetIdx === -1
             const newChat: IChatItem = {
               receiverId: 0,
-              name: '',
+              name: "",
               roomKey: initialChat.roomKey,
               updatedAt: new Date().toISOString(),
               unreadCnt: 0,
-              latestMsg: '消息记录为空',
-              mediaType: 'text',
+              latestMsg: "消息记录为空",
+              mediaType: "text",
               avatar: initialChat.avatar,
             };
             if (friendOrGroup(initialChat)) {
@@ -151,13 +153,13 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
           const params = {
             roomKey: initialChat.roomKey,
             senderId: userInfo.id,
-            type: friendOrGroup(initialChat) ? 'friend' : 'group',
+            type: friendOrGroup(initialChat) ? "friend" : "group",
           };
           connWs(params);
         }
       } catch (err) {
         console.error(err);
-        toast.error('获取消息列表失败');
+        toast.error("获取消息列表失败");
       }
     })();
 
@@ -173,7 +175,7 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
     const params = {
       roomKey: item.roomKey,
       senderId: userInfo.id,
-      type: friendOrGroup2(item) ? 'friend' : 'group',
+      type: friendOrGroup2(item) ? "friend" : "group",
     };
     connWs(params);
     fetchChatList();
@@ -204,7 +206,7 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
                   key={chat.roomKey}
                   onClick={() => handleClickChat(chat)}
                   className={`flex cursor-pointer items-center justify-between p-3 transition-colors hover:bg-[#d6e8d1] ${
-                    curChat?.roomKey === chat.roomKey ? 'bg-[#cce3c5] hover:bg-[#cce3c5]' : ''
+                    curChat?.roomKey === chat.roomKey ? "bg-[#cce3c5] hover:bg-[#cce3c5]" : ""
                   }`}
                 >
                   <ImgContainer
@@ -216,16 +218,16 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
                     <div className="truncate text-sm text-gray-500">
                       {(() => {
                         switch (chat.mediaType) {
-                          case 'text':
+                          case "text":
                             return chat.latestMsg;
-                          case 'image':
-                            return '[图片]';
-                          case 'video':
-                            return '[视频]';
-                          case 'file':
-                            return '[文件]';
+                          case "image":
+                            return "[图片]";
+                          case "video":
+                            return "[视频]";
+                          case "file":
+                            return "[文件]";
                           default:
-                            return '';
+                            return "";
                         }
                       })()}
                     </div>
@@ -234,7 +236,7 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
                     <div className="text-xs text-gray-400">{fmtTime4list(chat.updatedAt)}</div>
                     {chat.unreadCnt !== 0 && (
                       <div className="mt-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-                        {chat.unreadCnt > 99 ? '99+' : chat.unreadCnt}
+                        {chat.unreadCnt > 99 ? "99+" : chat.unreadCnt}
                       </div>
                     )}
                   </div>

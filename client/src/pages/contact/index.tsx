@@ -1,12 +1,23 @@
-import SearchBar from '@/components/search-bar';
-import useToast from '@/hooks/use-toast';
-import useUserInfoStore from '@/store/user-info';
-import type { IFriendExt, ITaggedFriends } from '@/types/friend';
-import type { IGroupExt, IGroupItem } from '@/types/group';
-import type { ITagItem } from '@/types/friend';
-import { Button, Empty, Form, Input, Modal, Popconfirm, Select, Tabs, TabsProps, Tooltip } from 'antd';
-import { useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
-import ImgContainer from '@/components/img-container';
+import SearchBar from "@/components/search-bar";
+import useToast from "@/hooks/use-toast";
+import useUserInfoStore from "@/store/user-info";
+import type { IFriendExt, ITaggedFriends } from "@/types/friend";
+import type { IGroupExt, IGroupItem } from "@/types/group";
+import type { ITagItem } from "@/types/friend";
+import {
+  Button,
+  Empty,
+  Form,
+  Input,
+  Modal,
+  Popconfirm,
+  Select,
+  Tabs,
+  TabsProps,
+  Tooltip,
+} from "antd";
+import { useCallback, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import ImgContainer from "@/components/img-container";
 import {
   addTagApi,
   deleteFriendApi,
@@ -14,14 +25,14 @@ import {
   fetchFriendListApi,
   fetchTagListApi,
   updateFriendApi,
-} from '@/apis/friend';
-import { BaseState } from '@/utils/constants';
-import type { DataNode, DirectoryTreeProps, EventDataNode } from 'antd/es/tree';
-import { fetchGroupByIdApi, fetchGroupListApi } from '@/apis/group';
-import DirectoryTree from 'antd/es/tree/DirectoryTree';
-import { MessageEmoji } from '@icon-park/react';
-import CreateGroupModal from '@/components/create-group-modal';
-import styles from './index.module.scss';
+} from "@/apis/friend";
+import { BaseState } from "@/utils/constants";
+import type { DataNode, DirectoryTreeProps, EventDataNode } from "antd/es/tree";
+import { fetchGroupByIdApi, fetchGroupListApi } from "@/apis/group";
+import DirectoryTree from "antd/es/tree/DirectoryTree";
+import { MessageEmoji } from "@icon-park/react";
+import CreateGroupModal from "@/components/create-group-modal";
+import styles from "./index.module.scss";
 
 export interface IContactRef {
   fetchFriendList: () => void; // 获取好友列表
@@ -39,7 +50,7 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
   const toast = useToast();
 
   // 当前标签页类型: 好友或群聊
-  const [curTab, setCurTab] = useState<string>('friend');
+  const [curTab, setCurTab] = useState<string>("friend");
   // 好友列表
   const [friendList, setFriendList] = useState<ITaggedFriends /** 某标签下的全部好友 */[]>([]);
   // 当前选中的好友
@@ -58,7 +69,7 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
   // 新建标签的弹窗挂载/卸载
   const [mountAddTagModal, setMountAddTagModal] = useState(false);
   // 新建标签名
-  const [newTagName, setNewTagName] = useState('');
+  const [newTagName, setNewTagName] = useState("");
   // 群聊列表
   const [groupList, setGroupList] = useState<IGroupItem[]>([]);
   // 当前选中的群聊
@@ -91,9 +102,9 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
               <div className="text-gray-800">{friend.noteName}</div>
             </div>
             <div
-              className={`text-xs ${friend.state === 'online' ? 'text-theme5' : 'text-gray-400'}`}
+              className={`text-xs ${friend.state === "online" ? "text-theme5" : "text-gray-400"}`}
             >
-              {friend.state === 'online' ? '在线' : '离线'}
+              {friend.state === "online" ? "在线" : "离线"}
             </div>
           </div>
         ),
@@ -119,17 +130,17 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
             tagId: res.data.tagId,
           });
         } else {
-          toast.error('获取好友详情失败');
+          toast.error("获取好友详情失败");
         }
       } catch (err) {
         console.error(err);
-        toast.error('获取好友详情失败');
+        toast.error("获取好友详情失败");
       }
     },
     [toast, friendFormInst],
   );
 
-  const handleSelectFriend: DirectoryTreeProps['onSelect'] = useCallback(
+  const handleSelectFriend: DirectoryTreeProps["onSelect"] = useCallback(
     (
       _selectedKeys: React.Key[],
       info: {
@@ -148,11 +159,11 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
         if (res.code === BaseState.Ok) {
           setCurGroup(res.data);
         } else {
-          toast.error('获取群聊详情失败');
+          toast.error("获取群聊详情失败");
         }
       } catch (err) {
         console.error(err);
-        toast.error('获取群聊详情失败');
+        toast.error("获取群聊详情失败");
       }
     },
     [toast],
@@ -177,7 +188,7 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
       }
     } catch (err) {
       console.error(err);
-      toast.error('获取好友列表失败');
+      toast.error("获取好友列表失败");
     }
   }, [_fetchFriendById, curFriend, toast]);
 
@@ -188,11 +199,11 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
       if (res.code === BaseState.Ok && res.data) {
         setTagList(res.data);
       } else {
-        toast.error('获取标签列表');
+        toast.error("获取标签列表");
       }
     } catch (err) {
       console.error(err);
-      toast.error('获取标签列表失败');
+      toast.error("获取标签列表失败");
     }
   };
 
@@ -207,14 +218,14 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
         };
         const res = await updateFriendApi(params);
         if (res.code === BaseState.Ok /**  && res.data */) {
-          toast.success('更新好友详情成功');
+          toast.success("更新好友详情成功");
           fetchFriendList();
         } else {
-          toast.error('更新好友详情失败');
+          toast.error("更新好友详情失败");
         }
       } catch (err) {
         console.error(err);
-        toast.error('更新好友详情失败');
+        toast.error("更新好友详情失败");
       }
     });
   };
@@ -227,22 +238,22 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
     try {
       const res = await deleteFriendApi(curFriend.friendId);
       if (res.code === BaseState.Ok) {
-        toast.success('删除好友成功');
+        toast.success("删除好友成功");
         setCurFriend(null);
         fetchFriendList();
       } else {
-        toast.error('删除好友失败');
+        toast.error("删除好友失败");
       }
     } catch (err) {
       console.error(err);
-      toast.error('删除好友失败');
+      toast.error("删除好友失败");
     }
   };
 
   // 新建标签
   const addTag = async () => {
     if (!newTagName) {
-      toast.warning('请输入标签名');
+      toast.warning("请输入标签名");
       return;
     }
     try {
@@ -253,16 +264,16 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
       };
       const res = await addTagApi(params);
       if (res.code === BaseState.Ok) {
-        toast.success('新建标签成功');
+        toast.success("新建标签成功");
         fetchFriendList();
         _fetchTagList();
         setMountAddTagModal(false);
       } else {
-        toast.error('新建标签失败');
+        toast.error("新建标签失败");
       }
     } catch (err) {
       console.error(err);
-      toast.error('新建标签失败');
+      toast.error("新建标签失败");
     }
   };
 
@@ -276,17 +287,17 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
       if (res.code === BaseState.Ok) {
         setGroupList(res.data);
       } else {
-        toast.error('获取群聊列表失败');
+        toast.error("获取群聊列表失败");
       }
     } catch (err) {
       console.error(err);
-      toast.error('获取群聊列表失败');
+      toast.error("获取群聊列表失败");
     }
   }, [_fetchGroupById, curGroup, toast]);
 
   const CtxMenu = useCallback(
-    (tabKey: 'friend' | 'group') => {
-      return tabKey === 'friend' ? (
+    (tabKey: "friend" | "group") => {
+      return tabKey === "friend" ? (
         <ul>
           <li onClick={fetchFriendList}>刷新好友列表</li>
           <li onClick={() => setMountAddTagModal(true)}>新建标签</li>
@@ -301,26 +312,26 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
   );
 
   const TabLabel = useCallback(
-    (tabKey: 'friend' | 'group') => {
+    (tabKey: "friend" | "group") => {
       return (
         <Tooltip
           placement="bottomLeft"
           title={CtxMenu(tabKey)}
           arrow={false}
-          trigger={'contextMenu'}
+          trigger={"contextMenu"}
         >
-          {tabKey === 'friend' ? '好友' : '群聊'}
+          {tabKey === "friend" ? "好友" : "群聊"}
         </Tooltip>
       );
     },
     [CtxMenu],
   );
 
-  const tabItems: TabsProps['items'] = useMemo(
+  const tabItems: TabsProps["items"] = useMemo(
     () => [
       {
-        key: 'friend',
-        label: TabLabel('friend'),
+        key: "friend",
+        label: TabLabel("friend"),
         children:
           treeData.length === 0 ? (
             <Empty />
@@ -335,8 +346,8 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
           ),
       },
       {
-        key: 'group',
-        label: TabLabel('group'),
+        key: "group",
+        label: TabLabel("group"),
         children:
           groupList.length === 0 ? (
             <Empty description="暂无群聊" />
@@ -347,7 +358,7 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
                   key={item.id}
                   onClick={() => handleClickGroup(item)}
                   className={`flex h-[60px] cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-[#d6e8d1] ${
-                    curGroup?.id === item.id ? 'bg-[#cce3c5] hover:bg-[#cce3c5]' : ''
+                    curGroup?.id === item.id ? "bg-[#cce3c5] hover:bg-[#cce3c5]" : ""
                   }`}
                 >
                   <div className="flex w-full items-center gap-3">
@@ -366,21 +377,21 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
     [TabLabel, groupList, handleClickGroup, handleSelectFriend, treeData],
   );
 
-  const subTabItems: TabsProps['items'] = [
+  const subTabItems: TabsProps["items"] = [
     {
-      key: 'groupIndex',
-      label: '群聊主页',
+      key: "groupIndex",
+      label: "群聊主页",
       children: (
         <div>
           <div>群主: {curGroup?.creatorEmail}</div>
           <div>群聊人数: {curGroup?.memberList.length}</div>
-          <div>创建时间: {curGroup?.createdAt.split('.')[0].replace('T', '')}</div>
+          <div>创建时间: {curGroup?.createdAt.split(".")[0].replace("T", "")}</div>
         </div>
       ),
     },
     {
-      key: 'groupDetail',
-      label: '群聊详情',
+      key: "groupDetail",
+      label: "群聊详情",
       children: (
         <div>
           <ul className="flex">
@@ -394,9 +405,9 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
               <ul key={item.userId} className="flex">
                 <li className="flex-1">{item.username}</li>
                 <li className="flex-1">{item.nickname}</li>
-                <li className="flex-1">{item.createdAt.split('.')[0].replace('T', ' ')}</li>
+                <li className="flex-1">{item.createdAt.split(".")[0].replace("T", " ")}</li>
                 <li className="flex-1">
-                  {item.latestMsgTime?.split('.')[0].replace('T', '') || '没有发言记录'}
+                  {item.latestMsgTime?.split(".")[0].replace("T", "") || "没有发言记录"}
                 </li>
               </ul>
             ))}
@@ -417,10 +428,10 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
 
   useEffect(() => {
     switch (curTab) {
-      case 'friend':
+      case "friend":
         setCurGroup(null);
         break;
-      case 'group':
+      case "group":
         setCurFriend(null);
         break;
     }
@@ -459,7 +470,7 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
         {LeftContainer}
         {/* rightContainer */}
         <div className="bg-theme flex h-dvh flex-1 flex-col items-center justify-center overflow-hidden">
-          {curTab === 'friend' && curFriend && (
+          {curTab === "friend" && curFriend && (
             <div className="mx-auto w-full max-w-2xl rounded-2xl bg-white p-10 shadow-sm">
               <div className="mb-10 flex w-full items-center border-b border-gray-100 pb-10">
                 <ImgContainer
@@ -472,7 +483,7 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
                   </div>
                   <div className="mb-1 text-sm text-gray-500">邮箱: {curFriend.email}</div>
                   <div className="text-sm text-gray-500">
-                    个性签名: {curFriend.signature ?? '这个人很神秘, 没有签名'}
+                    个性签名: {curFriend.signature ?? "这个人很神秘, 没有签名"}
                   </div>
                 </div>
               </div>
@@ -534,7 +545,7 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
               </div>
             </div>
           )}
-          {curTab === 'group' && curGroup && (
+          {curTab === "group" && curGroup && (
             <div className="mx-auto w-full max-w-2xl rounded-2xl bg-white p-10 shadow-sm">
               <div className="mb-10 flex w-full items-center border-b border-gray-100 pb-10">
                 <ImgContainer
@@ -544,14 +555,14 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps /** props */) => {
                 <div className="ml-8 flex-1">
                   <div className="mb-2 text-2xl font-bold text-gray-800">{curGroup.name}</div>
                   <div className="text-sm text-gray-500">
-                    群公告: {curGroup.readme ?? '这个群很神秘, 没有群公告'}
+                    群公告: {curGroup.readme ?? "这个群很神秘, 没有群公告"}
                   </div>
                 </div>
               </div>
               <div className="px-4">
                 <Tabs
                   centered
-                  defaultActiveKey={'groupIndex'}
+                  defaultActiveKey={"groupIndex"}
                   items={subTabItems}
                   className="mb-8"
                 />

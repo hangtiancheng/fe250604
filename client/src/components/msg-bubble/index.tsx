@@ -1,18 +1,18 @@
-import useUserInfoStore from '@/store/user-info';
-import { IMsg } from '@/types/chat';
-import { IMediaItem } from '@/types/file';
+import useUserInfoStore from "@/store/user-info";
+import { IMsg } from "@/types/chat";
+import { IMediaItem } from "@/types/file";
 import {
   calcMediaRawSize,
   calcMediaWidth,
   checkUrlExist,
   downloadFile,
   getFileIcon,
-} from '@/utils/file';
-import { DeleteFive, Play } from '@icon-park/react';
-import { useEffect, useState } from 'react';
-import { Image, Modal } from 'antd';
-import { fmtTime4chat } from '@/utils/fmt';
-import ImgContainer from '../img-container';
+} from "@/utils/file";
+import { DeleteFive, Play } from "@icon-park/react";
+import { useEffect, useState } from "react";
+import { Image, Modal } from "antd";
+import { fmtTime4chat } from "@/utils/fmt";
+import ImgContainer from "../img-container";
 
 interface IProps {
   isTimeDisplay: boolean;
@@ -20,7 +20,7 @@ interface IProps {
 }
 
 interface IProps2 {
-  mediaType: 'text' | 'image' | 'video' | 'file';
+  mediaType: "text" | "image" | "video" | "file";
   content: string;
   fileSize?: string;
 }
@@ -51,10 +51,10 @@ const MsgBubble: React.FC<IProps> = (props: IProps) => {
     useEffect(() => {
       const newMediaUrl = `${import.meta.env.VITE_SERVER_URL}/${content}`;
       setMediaUrl(newMediaUrl); // 异步
-      if (mediaType !== 'text') {
+      if (mediaType !== "text") {
         checkUrlExist(newMediaUrl).then((res) => setIsFileExist(res));
       }
-      if (mediaType === 'image' || mediaType === 'video') {
+      if (mediaType === "image" || mediaType === "video") {
         calcMediaRawSize(newMediaUrl, mediaType)
           .then((size) => {
             setCurMedia({ type: mediaType, url: newMediaUrl, size });
@@ -66,24 +66,24 @@ const MsgBubble: React.FC<IProps> = (props: IProps) => {
     if (!isFileExist) {
       return <FallbackContent />;
     }
-    const filename = mediaUrl.split('/').at(-1)!;
+    const filename = mediaUrl.split("/").at(-1)!;
     const FileIcon = getFileIcon(filename);
     switch (mediaType) {
-      case 'text':
+      case "text":
         return (
           <div
             className={`max-w-md rounded-lg px-4 py-2 wrap-break-word ${
-              senderId === userInfo.id ? 'bg-[#95ec69] text-black' : 'bg-white text-black'
+              senderId === userInfo.id ? "bg-[#95ec69] text-black" : "bg-white text-black"
             }`}
           >
             {content}
           </div>
         );
-      case 'image':
+      case "image":
         return (
-          curMedia && <Image width={calcMediaWidth(curMedia.size, 'image')} src={curMedia.url} />
+          curMedia && <Image width={calcMediaWidth(curMedia.size, "image")} src={curMedia.url} />
         );
-      case 'video':
+      case "video":
         return (
           curMedia && (
             <div>
@@ -102,7 +102,7 @@ const MsgBubble: React.FC<IProps> = (props: IProps) => {
             </div>
           )
         );
-      case 'file':
+      case "file":
         return (
           <div onClick={() => downloadFile(mediaUrl)}>
             <div>文件名: {filename}</div>

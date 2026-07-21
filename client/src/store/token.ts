@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { create, StateCreator } from 'zustand';
+import { create, StateCreator } from "zustand";
 
 export interface ITokenState {
   token: string;
@@ -9,17 +9,17 @@ export interface ITokenState {
 
 export const createAuthTokenStore: StateCreator<ITokenState> = (set) => {
   return {
-    token: sessionStorage.getItem('token') ?? '',
+    token: sessionStorage.getItem("token") ?? "",
     setToken: (token: string) => {
       set((_state: ITokenState) => {
-        sessionStorage.setItem('token', token);
+        sessionStorage.setItem("token", token);
         return { token };
       });
     },
     clearToken: () => {
       set((_state: ITokenState) => {
         sessionStorage.clear();
-        return { token: '' };
+        return { token: "" };
       });
     },
   };

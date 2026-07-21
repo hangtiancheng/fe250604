@@ -1,26 +1,26 @@
-import { logoutApi } from '@/apis/user';
-import ImgContainer from '@/components/img-container';
-import useToast from '@/hooks/use-toast';
-import useUserInfoStore from '@/store/user-info';
-import useViewStore from '@/store/view';
+import { logoutApi } from "@/apis/user";
+import ImgContainer from "@/components/img-container";
+import useToast from "@/hooks/use-toast";
+import useUserInfoStore from "@/store/user-info";
+import useViewStore from "@/store/view";
 
-import type { IChatRef, IContactRef } from '@/types/fc-expose';
-import { BaseState } from '@/utils/constants';
+import type { IChatRef, IContactRef } from "@/types/fc-expose";
+import { BaseState } from "@/utils/constants";
 
-import { Button, Popover, Tooltip } from 'antd';
-import { useEffect, useRef, useState } from 'react';
-import { IconItem, MenuIconKey, MenuIconList } from '@/utils/icons';
+import { Button, Popover, Tooltip } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { IconItem, MenuIconKey, MenuIconList } from "@/utils/icons";
 
-import Chat from '../chat';
-import Contact from '../contact';
-import PwdModal from '@/components/pwd-modal';
-import UserInfoModal from '@/components/user-info-modal';
-import AudioModal from '@/components/audio-modal';
-import VideoModal from '@/components/video-modal';
+import Chat from "../chat";
+import Contact from "../contact";
+import PwdModal from "@/components/pwd-modal";
+import UserInfoModal from "@/components/user-info-modal";
+import AudioModal from "@/components/audio-modal";
+import VideoModal from "@/components/video-modal";
 
-import type { IGroupExt } from '@/types/group';
-import type { IFriendExt } from '@/types/friend';
-import { ICallReceiver } from '@/types/chat';
+import type { IGroupExt } from "@/types/group";
+import type { IFriendExt } from "@/types/friend";
+import { ICallReceiver } from "@/types/chat";
 
 const Home: React.FC = () => {
   const toast = useToast();
@@ -29,7 +29,7 @@ const Home: React.FC = () => {
   const userInfo = userInfoStore.userInfo;
 
   // 当前选中的图标
-  const [curIconKey, setCurIconKey] = useState<MenuIconKey>('MessageEmoji');
+  const [curIconKey, setCurIconKey] = useState<MenuIconKey>("MessageEmoji");
   // 更新密码的弹窗
   const [mountPwdModal, setMountPwdModal] = useState(false);
   // 更新用户信息的弹窗
@@ -41,10 +41,10 @@ const Home: React.FC = () => {
   // 当前选中的好友或群聊
   const [curChat, setCurChat] = useState<IFriendExt | IGroupExt | null>(null);
   // 房间号
-  const [roomKey, setRoomKey] = useState<string>('');
+  const [roomKey, setRoomKey] = useState<string>("");
   // 聊天模式: 音频; 视频; 音视频
   const [rtcMode, setRtcMode] = useState<
-    'friendAudio' | 'groupAudio' | 'friendVideo' | 'groupVideo'
+    "friendAudio" | "groupAudio" | "friendVideo" | "groupVideo"
   >();
   // 接收者列表
   const [callReceiverList, setCallReceiverList] = useState<ICallReceiver[]>([]);
@@ -61,12 +61,12 @@ const Home: React.FC = () => {
     try {
       const res = await logoutApi(userInfo);
       if (res.code !== BaseState.Ok) {
-        toast.error('退出登录失败');
+        toast.error("退出登录失败");
         return;
       }
       userInfoStore.clearUserInfo();
-      toast.success('退出登录成功');
-      viewStore.setView('login');
+      toast.success("退出登录成功");
+      viewStore.setView("login");
       if (webSocket.current !== null) {
         // 关闭 websocket 连接
         webSocket.current.close();
@@ -74,7 +74,7 @@ const Home: React.FC = () => {
       }
     } catch (err) {
       console.error(err);
-      toast.error('退出登录失败');
+      toast.error("退出登录失败");
     }
   };
 
@@ -86,7 +86,7 @@ const Home: React.FC = () => {
           <div className="flex flex-col gap-3">
             <div>{userInfo.username}</div>
             <div className="truncate">
-              {userInfo.signature?.length ? userInfo.signature : '这个人很神秘, 没有签名'}
+              {userInfo.signature?.length ? userInfo.signature : "这个人很神秘, 没有签名"}
             </div>
           </div>
           <div className="flex justify-between">
@@ -105,49 +105,49 @@ const Home: React.FC = () => {
     );
     ws.onmessage = (ev) => {
       const msg: {
-        type: 'wsFetchFriendList' | 'wsFetchGroupList' | 'wsFetchChatList' | 'wsCreateRtcRoom';
+        type: "wsFetchFriendList" | "wsFetchGroupList" | "wsFetchChatList" | "wsCreateRtcRoom";
         receiverList: ICallReceiver[];
         roomKey: string;
-        mode?: 'friendAudio' | 'groupAudio' | 'friendVideo' | 'groupVideo';
+        mode?: "friendAudio" | "groupAudio" | "friendVideo" | "groupVideo";
       } = JSON.parse(ev.data);
 
       switch (msg.type) {
-        case 'wsFetchFriendList':
-          console.log('[ws] Fetch friend list');
+        case "wsFetchFriendList":
+          console.log("[ws] Fetch friend list");
           // 获取好友列表
           contactRef.current?.fetchFriendList();
           break;
-        case 'wsFetchGroupList':
-          console.log('[ws] Fetch group list');
+        case "wsFetchGroupList":
+          console.log("[ws] Fetch group list");
           // 获取群聊列表
           contactRef.current?.fetchGroupList();
           break;
-        case 'wsFetchChatList':
-          console.log('[ws] Fetch chat list');
+        case "wsFetchChatList":
+          console.log("[ws] Fetch chat list");
           // 获取聊天列表
           chatRef.current?.fetchChatList();
           break;
-        case 'wsCreateRtcRoom':
-          console.log('[ws] Create RTC room');
+        case "wsCreateRtcRoom":
+          console.log("[ws] Create RTC room");
           // cmd, roomKey, mode, receiverList
           // mode: "friendAudio" | "friendVideo" | "groupAudio" | "groupVideo";
           try {
             const { receiverList, roomKey, mode } = msg;
             if (!mode) {
-              console.error('[ws] wsCreateRtcRoom missing mode, fallback to group:', msg);
+              console.error("[ws] wsCreateRtcRoom missing mode, fallback to group:", msg);
             }
             setCallReceiverList(receiverList);
             setRtcMode(mode);
             setRoomKey(roomKey);
-            if (mode?.toLowerCase().includes('audio')) {
+            if (mode?.toLowerCase().includes("audio")) {
               setMountAudioModal(true);
             }
-            if (mode?.toLowerCase().includes('video')) {
+            if (mode?.toLowerCase().includes("video")) {
               setMountVideoModal(true);
             }
           } catch (err) {
             console.error(err);
-            toast.error('音视频聊天失败');
+            toast.error("音视频聊天失败");
           }
           break;
       }
@@ -158,13 +158,13 @@ const Home: React.FC = () => {
 
   const handleClickIcon = (item: IconItem) => {
     setCurIconKey(item.key as MenuIconKey);
-    if (item.key === 'Power') {
+    if (item.key === "Power") {
       logout();
     }
   };
 
   const doChat = (chat: IFriendExt | IGroupExt) => {
-    setCurIconKey('MessageEmoji');
+    setCurIconKey("MessageEmoji");
     setCurChat(chat);
   };
 
@@ -189,7 +189,7 @@ const Home: React.FC = () => {
                 <Tooltip placement="right" title={item.title} arrow={false}>
                   <item.IconInst
                     onClick={() => handleClickIcon(item)}
-                    className={`${curIconKey === item.key ? 'text-theme5' : 'text-slate-500'} cursor-pointer text-5xl`}
+                    className={`${curIconKey === item.key ? "text-theme5" : "text-slate-500"} cursor-pointer text-5xl`}
                     strokeWidth={3}
                   />
                 </Tooltip>
@@ -203,7 +203,7 @@ const Home: React.FC = () => {
                 <Tooltip placement="right" title={item.title} arrow={false}>
                   <item.IconInst
                     onClick={() => handleClickIcon(item)}
-                    className={`${curIconKey === item.key ? 'text-theme5' : 'text-slate-500'} cursor-pointer text-5xl`}
+                    className={`${curIconKey === item.key ? "text-theme5" : "text-slate-500"} cursor-pointer text-5xl`}
                     strokeWidth={3}
                   />
                 </Tooltip>
@@ -216,9 +216,9 @@ const Home: React.FC = () => {
           {
             (() => {
               switch (curIconKey) {
-                case 'MessageEmoji':
+                case "MessageEmoji":
                   return <Chat ref={chatRef} initialChat={curChat} />;
-                case 'AddressBook':
+                case "AddressBook":
                   return <Contact ref={contactRef} doChat={doChat} />;
               }
             })() /** IIFE */
@@ -234,7 +234,7 @@ const Home: React.FC = () => {
           state="receive"
           mountModal={mountAudioModal}
           setMountModal={setMountAudioModal}
-          type={rtcMode?.includes('friend') ? 'friend' : 'group'}
+          type={rtcMode?.includes("friend") ? "friend" : "group"}
           roomKey={roomKey}
           callReceiverList={callReceiverList}
         />
@@ -244,7 +244,7 @@ const Home: React.FC = () => {
           state="receive"
           mountModal={mountVideoModal}
           setMountModal={setMountVideoModal}
-          type={rtcMode?.includes('friend') ? 'friend' : 'group'}
+          type={rtcMode?.includes("friend") ? "friend" : "group"}
           roomKey={roomKey}
           callReceiverList={callReceiverList}
         />

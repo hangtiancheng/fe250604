@@ -1,10 +1,10 @@
-import { logoutApi, updatePwdApi } from '@/apis/user';
-import useToast from '@/hooks/use-toast';
-import useUserInfoStore from '@/store/user-info';
-import useViewStore from '@/store/view';
-import { BaseState } from '@/utils/constants';
-import { Button, Form, Input, Modal } from 'antd';
-import { useState } from 'react';
+import { logoutApi, updatePwdApi } from "@/apis/user";
+import useToast from "@/hooks/use-toast";
+import useUserInfoStore from "@/store/user-info";
+import useViewStore from "@/store/view";
+import { BaseState } from "@/utils/constants";
+import { Button, Form, Input, Modal } from "antd";
+import { useState } from "react";
 
 interface IProps {
   mountModal: boolean;
@@ -28,17 +28,17 @@ const PwdModal: React.FC<IProps> = (props: IProps) => {
     try {
       const res = await logoutApi(userInfo);
       if (res.code !== BaseState.Ok) {
-        toast.error('退出登录失败');
+        toast.error("退出登录失败");
         return;
       }
       userInfoStore.clearUserInfo();
-      localStorage.removeItem('token');
-      localStorage.removeItem('userInfo');
-      toast.success('登录已过期, 请重新登录');
-      viewStore.setView('login');
+      localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
+      toast.success("登录已过期, 请重新登录");
+      viewStore.setView("login");
     } catch (err) {
       console.error(err);
-      toast.error('退出登录失败');
+      toast.error("退出登录失败");
     }
   };
 
@@ -49,21 +49,21 @@ const PwdModal: React.FC<IProps> = (props: IProps) => {
   }) => {
     const { email, password, confirmPwd } = formData;
     if (password !== confirmPwd) {
-      return toast.error('两次输入的密码不同');
+      return toast.error("两次输入的密码不同");
     }
     setIsLoading(true);
     try {
       const res = await updatePwdApi({ email, password });
       if (res.code === BaseState.Ok) {
-        toast.success('密码更新成功');
+        toast.success("密码更新成功");
         setMountModal(false);
         logout();
       } else {
-        toast.error('密码更新失败');
+        toast.error("密码更新失败");
       }
     } catch (err) {
       console.error(err);
-      toast.error('密码更新失败');
+      toast.error("密码更新失败");
     } finally {
       setIsLoading(false);
     }
@@ -91,8 +91,8 @@ const PwdModal: React.FC<IProps> = (props: IProps) => {
           <Form.Item
             name="password"
             rules={[
-              { required: true, message: '请输入新密码' },
-              { max: 15, message: '密码最多 15 个字符' },
+              { required: true, message: "请输入新密码" },
+              { max: 15, message: "密码最多 15 个字符" },
             ]}
           >
             <Input type="password" placeholder="请输入新密码" />
@@ -100,8 +100,8 @@ const PwdModal: React.FC<IProps> = (props: IProps) => {
           <Form.Item
             name="confirmPwd"
             rules={[
-              { required: true, message: '请确认新密码' },
-              { max: 15, message: '密码最多 15 个字符' },
+              { required: true, message: "请确认新密码" },
+              { max: 15, message: "密码最多 15 个字符" },
             ]}
           >
             <Input type="password" placeholder="请确认新密码" />

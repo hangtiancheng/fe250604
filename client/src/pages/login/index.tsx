@@ -1,16 +1,16 @@
-import useToast from '@/hooks/use-toast';
-import useTokenStore from '@/store/token';
-import useUserInfoStore from '@/store/user-info';
-import useViewStore from '@/store/view';
-import { decrypt, encrypt, genRandStr } from '@/utils/auth';
-import { Button, Checkbox, Form, Input } from 'antd';
-import { useEffect, useState } from 'react';
-import { loginApi } from '@/apis/user';
-import { BaseState } from '@/utils/constants';
-import { IUserInfo } from '@/types/user';
-import ForgetPwdModal from '@/components/forget-pwd-modal';
+import useToast from "@/hooks/use-toast";
+import useTokenStore from "@/store/token";
+import useUserInfoStore from "@/store/user-info";
+import useViewStore from "@/store/view";
+import { decrypt, encrypt, genRandStr } from "@/utils/auth";
+import { Button, Checkbox, Form, Input } from "antd";
+import { useEffect, useState } from "react";
+import { loginApi } from "@/apis/user";
+import { BaseState } from "@/utils/constants";
+import { IUserInfo } from "@/types/user";
+import ForgetPwdModal from "@/components/forget-pwd-modal";
 
-import styles from './index.module.scss';
+import styles from "./index.module.scss";
 
 const Login: React.FC = () => {
   const tokenStore = useTokenStore();
@@ -31,14 +31,14 @@ const Login: React.FC = () => {
     const encryptedUserInfo = await encrypt(JSON.stringify(userInfo));
     const encryptedToken = await encrypt(token);
     if (encryptedUserInfo && token) {
-      localStorage.setItem('userInfo', encryptedUserInfo);
-      localStorage.setItem('token', encryptedToken);
+      localStorage.setItem("userInfo", encryptedUserInfo);
+      localStorage.setItem("token", encryptedToken);
     }
   }
 
   async function readLocal() {
-    const userInfoStr = localStorage.getItem('userInfo');
-    const token_ = localStorage.getItem('token');
+    const userInfoStr = localStorage.getItem("userInfo");
+    const token_ = localStorage.getItem("token");
     if (!userInfoStr || !token_) {
       return;
     }
@@ -49,8 +49,8 @@ const Login: React.FC = () => {
       return { userInfo, token };
     } catch (err) {
       console.trace(err);
-      localStorage.removeItem('token');
-      localStorage.removeItem('userInfo');
+      localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
       return null;
     }
   }
@@ -61,14 +61,14 @@ const Login: React.FC = () => {
     if (ret && ret.userInfo?.email === email) {
       tokenStore.setToken(ret.token);
       userInfoStore.setUserInfo(ret.userInfo);
-      toast.success('登录成功');
-      return viewStore.setView('home');
+      toast.success("登录成功");
+      return viewStore.setView("home");
     }
     setIsLoading(true);
     const reqData = { email, password };
     const res = await loginApi(reqData);
     if (res.code === BaseState.Ok && res.data) {
-      toast.success('登录成功');
+      toast.success("登录成功");
       setIsLoading(false);
       const { token, userInfo } = res.data;
       tokenStore.setToken(token);
@@ -76,19 +76,19 @@ const Login: React.FC = () => {
       if (isRemember) {
         writeLocal(token, userInfo);
       }
-      return viewStore.setView('home');
+      return viewStore.setView("home");
     }
-    toast.error(res.msg || '登录失败');
+    toast.error(res.msg || "登录失败");
     setIsLoading(false);
   };
 
   const handleRemember = () => {
     const newIsRemember = !isRemember;
     setRemember(newIsRemember); // 异步
-    localStorage.setItem('isRemember', `${newIsRemember}`);
+    localStorage.setItem("isRemember", `${newIsRemember}`);
     if (!newIsRemember) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userInfo');
+      localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
     }
   };
 
@@ -119,8 +119,8 @@ const Login: React.FC = () => {
           <Form.Item
             name="email"
             rules={[
-              { required: true, message: '请输入邮箱' },
-              { max: 30, message: '邮箱最多 30 个字符' },
+              { required: true, message: "请输入邮箱" },
+              { max: 30, message: "邮箱最多 30 个字符" },
             ]}
           >
             <Input placeholder="请输入邮箱" maxLength={30} />
@@ -128,8 +128,8 @@ const Login: React.FC = () => {
           <Form.Item
             name="password"
             rules={[
-              { required: true, message: '请输入密码' },
-              { max: 15, message: '密码最多 15 个字符' },
+              { required: true, message: "请输入密码" },
+              { max: 15, message: "密码最多 15 个字符" },
             ]}
           >
             <Input placeholder="请输入密码" maxLength={15} type="password" />
@@ -150,7 +150,7 @@ const Login: React.FC = () => {
                 登录
               </Button>
               <div className="">
-                <a onClick={() => viewStore.setView('register')}>没有账号? 去注册</a>
+                <a onClick={() => viewStore.setView("register")}>没有账号? 去注册</a>
               </div>
             </div>
           </Form.Item>

@@ -1,7 +1,7 @@
-import { IMsg } from '@/types/chat';
-import { fmtTime4chat } from '@/utils/fmt';
-import { useEffect, useMemo, useRef } from 'react';
-import MsgBubble from '../msg-bubble';
+import { IMsg } from "@/types/chat";
+import { fmtTime4chat } from "@/utils/fmt";
+import { useEffect, useMemo, useRef } from "react";
+import MsgBubble from "../msg-bubble";
 
 interface IProps {
   historyMsgList: IMsg[];

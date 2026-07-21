@@ -26,7 +26,7 @@ export interface IGroupExt extends IGroupItem {
   memberList: IGroupMemberExt[];
 }
 
-export interface IGroupMemberExt extends Omit<IGroupMemberItem, 'groupId'> {
+export interface IGroupMemberExt extends Omit<IGroupMemberItem, "groupId"> {
   avatar: string;
   latestMsgTime?: string;
   email: string;

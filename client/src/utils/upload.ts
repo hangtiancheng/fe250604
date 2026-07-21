@@ -1,6 +1,6 @@
-import { mergeChunksApi, uploadChunkApi, verifyFileApi } from '@/apis/file';
-import { BaseState, Code2Msg, FileState } from './constants';
-import { IUploadChunkParams } from '@/types/file';
+import { mergeChunksApi, uploadChunkApi, verifyFileApi } from "@/apis/file";
+import { BaseState, Code2Msg, FileState } from "./constants";
+import { IUploadChunkParams } from "@/types/file";
 
 // 1. 使用 spark-md5 + webworker 对文件分片, 并计算 hash 值, 得到 chunkList
 // 2. 携带 fileHash 请求服务器, 判断文件上传状态 verifyFile: 文件重复上传? 分块全部上传, 等待合并? 部分分块未上传? 服务器返回 pendingChunkIdxArr 等待上传的分块序号数组
@@ -27,10 +27,10 @@ export function uploadFile(
 }> {
   return new Promise((resolve, reject) => {
     const chunkList: ArrayBuffer[] = [];
-    const sliceWorker = new Worker(new URL('./slice-worker.ts', import.meta.url), {
-      type: 'module',
+    const sliceWorker = new Worker(new URL("./slice-worker.ts", import.meta.url), {
+      type: "module",
     });
-    let fileHash = '';
+    let fileHash = "";
     sliceWorker.postMessage(
       {
         file,
@@ -40,10 +40,10 @@ export function uploadFile(
     );
     sliceWorker.onmessage = async (ev) => {
       switch (ev.data.msgType) {
-        case 'progress':
+        case "progress":
           chunkList.push(...ev.data.chunkList);
           break;
-        case 'ok':
+        case "ok":
           chunkList.push(...ev.data.chunkList);
           fileHash = ev.data.fileHash;
           try {
@@ -59,15 +59,15 @@ export function uploadFile(
             if (res.done) {
               resolve(res);
             } else {
-              reject('文件分块失败');
+              reject("文件分块失败");
             }
           } catch (err) {
             console.error(err);
             reject(err);
           }
           break;
-        case 'err':
-          reject('文件分块失败');
+        case "err":
+          reject("文件分块失败");
       }
     };
   });
@@ -87,11 +87,11 @@ async function verifyThenMergeOrUpload(
 }> {
   // chunkList.length >= 1
   if (chunkList.length === 0) {
-    throw 'chunkList.length === 0';
+    throw "chunkList.length === 0";
   }
 
   const filename = file.name;
-  const extName = filename.split('.').at(-1) ?? '';
+  const extName = filename.split(".").at(-1) ?? "";
   let pendingChunkIdxArr: number[] = [];
   let progress = 0;
 
@@ -172,7 +172,7 @@ async function verifyThenMergeOrUpload(
           onProgress(progress);
         }
       } catch (err) {
-        console.error('上传分块失败:', err);
+        console.error("上传分块失败:", err);
         throw err; //! reject
       }
     }
@@ -224,5 +224,5 @@ async function retryUploadChunk(params: IUploadChunkParams, maxRetries = 3, retr
       await new Promise((resolve) => setTimeout(resolve, retryDelay)); // sleep(retryDelay)
     }
   }
-  throw 'retries >= maxRetries';
+  throw "retries >= maxRetries";
 }

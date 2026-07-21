@@ -27,12 +27,12 @@ export function genBase64(seed?: string): string {
   const MARGIN = 28;
   const SIZE = GRID * CELL + MARGIN * 2; // 256
 
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
   canvas.width = SIZE;
   canvas.height = SIZE;
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext("2d")!;
 
-  ctx.fillStyle = '#f0f0f0';
+  ctx.fillStyle = "#f0f0f0";
   ctx.fillRect(0, 0, SIZE, SIZE);
 
   const hue = Math.floor(rand() * 360);

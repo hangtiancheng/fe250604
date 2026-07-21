@@ -5,7 +5,7 @@ import axios, {
   type AxiosRequestConfig,
   type AxiosResponse,
   AxiosError,
-} from 'axios';
+} from "axios";
 
 interface IResponse<T> {
   code: number;
@@ -18,7 +18,7 @@ export class Request {
   private defaultConfig: AxiosRequestConfig = {
     baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
-      'Content-Type': 'application/json;charset=utf-8',
+      "Content-Type": "application/json;charset=utf-8",
     },
     ...(import.meta.env.DEV ? {} : { timeout: 5000 }),
   };
@@ -82,7 +82,7 @@ export class Request {
   private getToken(): string | null {
     //! React Hooks must be called in a React function component or a custom React Hook function
     // const token = useTokenStore();
-    return sessionStorage.getItem('token');
+    return sessionStorage.getItem("token");
   }
 
   // design pattern --> creational --> singleton

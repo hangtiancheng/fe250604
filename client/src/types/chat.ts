@@ -3,13 +3,13 @@ export interface IMsgItem {
   content: string; // messages 表字段 content, 消息内容
   fileSize: number; // messages 表字段 file_size, 文件大小, 单位 B
   id?: number; // messages 表字段 id, 消息 ID
-  mediaType: 'text' | 'image' | 'video' | 'file'; // messages 表字段 media_type, 媒体类型
+  mediaType: "text" | "image" | "video" | "file"; // messages 表字段 media_type, 媒体类型
   receiverId: number; // messages 表字段 receiver_id, 接收者的用户 ID
   roomKey: string; // messages 表字段 room_key, 房间号
   senderId: number; // messages 表字段 sender_id, 发送者的用户 ID
   state: 0 | 1; // messages 表字段 state, 消息状态
   // type: friend | group
-  type: 'friend' | 'group'; // messages 表字段 type, 消息类型
+  type: "friend" | "group"; // messages 表字段 type, 消息类型
   createdAt: string; // messages 表字段 created_at, 创建时间
   updatedAt?: string; // messages 表字段 updated_at, 更新时间
 }
@@ -17,7 +17,7 @@ export interface IMsgItem {
 export interface IMsg {
   content: string;
   fileSize?: string;
-  mediaType: 'text' | 'image' | 'video' | 'file';
+  mediaType: "text" | "image" | "video" | "file";
   receiverId: number;
   roomKey: string;
   senderId: number;
@@ -29,7 +29,7 @@ export interface ISendMsg {
   content: string;
   fileSize?: number;
   roomKey: string;
-  mediaType: 'text' | 'image' | 'video' | 'file';
+  mediaType: "text" | "image" | "video" | "file";
   receiverId: number;
   senderId: number;
   avatar: string;
@@ -52,7 +52,7 @@ export interface IChatItem {
   updatedAt: string; // 更新时间, 即最新消息的发送时间
   unreadCnt: number; // 未读消息数
   latestMsg: string; // 最新消息
-  mediaType: 'text' | 'image' | 'video' | 'file'; // 最新消息的类型
+  mediaType: "text" | "image" | "video" | "file"; // 最新消息的类型
   avatar: string; // 好友头像或群聊头像
 }
 

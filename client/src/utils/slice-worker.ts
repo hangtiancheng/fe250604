@@ -1,4 +1,4 @@
-import SparkMd5 from 'spark-md5';
+import SparkMd5 from "spark-md5";
 
 // 浏览器 worker 线程中, 没有 window 对象, this === undefined, globalThis === self
 // console.log(this); // undefined
@@ -37,12 +37,12 @@ async function sliceFile(file: File, baseChunkSize: number) {
 
     const workerMsg: {
       chunkList: ArrayBuffer[];
-      msgType: 'progress' | 'ok' | 'err';
+      msgType: "progress" | "ok" | "err";
       fileHash: string;
     } = {
       chunkList,
-      msgType: 'progress',
-      fileHash: '',
+      msgType: "progress",
+      fileHash: "",
     };
 
     const loadNext = () => {
@@ -59,13 +59,13 @@ async function sliceFile(file: File, baseChunkSize: number) {
         return;
       }
       const arrayBuffer =
-        typeof curChunk === 'string' ? new TextEncoder().encode(curChunk).buffer : curChunk;
+        typeof curChunk === "string" ? new TextEncoder().encode(curChunk).buffer : curChunk;
       chunkList.push(arrayBuffer as ArrayBuffer);
       sparkMd5arrBuf.append(arrayBuffer as ArrayBuffer);
       doneCnt++;
 
       if (chunkList.length >= 20) {
-        workerMsg.msgType = 'progress';
+        workerMsg.msgType = "progress";
         self.postMessage(workerMsg);
         // 清空数组
         chunkList.length = 0;
@@ -73,7 +73,7 @@ async function sliceFile(file: File, baseChunkSize: number) {
       }
 
       if (doneCnt >= chunkCnt) {
-        workerMsg.msgType = 'ok';
+        workerMsg.msgType = "ok";
         workerMsg.fileHash = sparkMd5arrBuf.end(); // hexHash
         self.postMessage(workerMsg);
         resolve(null);
@@ -83,7 +83,7 @@ async function sliceFile(file: File, baseChunkSize: number) {
     };
 
     fileReader.onerror = (ev: ProgressEvent) => {
-      workerMsg.msgType = 'err';
+      workerMsg.msgType = "err";
       self.postMessage(workerMsg);
       console.error(ev);
       reject(null);

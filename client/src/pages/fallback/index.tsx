@@ -1,4 +1,4 @@
-import { Empty } from 'antd';
+import { Empty } from "antd";
 
 const Fallback: React.FC = () => {
   return (

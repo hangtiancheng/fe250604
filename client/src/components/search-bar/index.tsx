@@ -1,8 +1,8 @@
-import { Plus, Search } from '@icon-park/react';
-import { Input, Tooltip } from 'antd';
-import { useState } from 'react';
-import AddModal from '../add-modal';
-import CreateGroupModal from '../create-group-modal';
+import { Plus, Search } from "@icon-park/react";
+import { Input, Tooltip } from "antd";
+import { useState } from "react";
+import AddModal from "../add-modal";
+import CreateGroupModal from "../create-group-modal";
 
 const SearchBar: React.FC = () => {
   const [mountAddModal, setMountAddModal] = useState(false);

@@ -1,17 +1,17 @@
-import styles from './index.module.scss';
-import { fetchGroupMembersApi } from '@/apis/group';
-import useToast from '@/hooks/use-toast';
-import useUserInfoStore from '@/store/user-info';
-import { ICallReceiver, IChatItem, ISendMsg } from '@/types/chat';
-import { BaseState } from '@/utils/constants';
-import { getFileType } from '@/utils/file';
-import { uploadFile } from '@/utils/upload';
-import { ChangeEvent, useRef, useState } from 'react';
-import AudioModal from '../audio-modal';
-import VideoModal from '../video-modal';
-import { EmojiList } from '@/utils/emoji';
-import { MsgIconKey, MsgIconList } from '@/utils/icons';
-import { Button, Popover, Spin, Tooltip } from 'antd';
+import styles from "./index.module.scss";
+import { fetchGroupMembersApi } from "@/apis/group";
+import useToast from "@/hooks/use-toast";
+import useUserInfoStore from "@/store/user-info";
+import { ICallReceiver, IChatItem, ISendMsg } from "@/types/chat";
+import { BaseState } from "@/utils/constants";
+import { getFileType } from "@/utils/file";
+import { uploadFile } from "@/utils/upload";
+import { ChangeEvent, useRef, useState } from "react";
+import AudioModal from "../audio-modal";
+import VideoModal from "../video-modal";
+import { EmojiList } from "@/utils/emoji";
+import { MsgIconKey, MsgIconList } from "@/utils/icons";
+import { Button, Popover, Spin, Tooltip } from "antd";
 
 interface IProps {
   curChat: IChatItem;
@@ -24,7 +24,7 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
   const toast = useToast();
   const userInfoStore = useUserInfoStore();
   const userInfo = userInfoStore.userInfo;
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [mountAudioModal, setMountAudioModal] = useState(false);
   const [mountVideoModal, setMountVideoModal] = useState(false);
@@ -65,17 +65,17 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
     const newMsg: ISendMsg = {
       senderId: userInfo.id,
       receiverId: curChat.receiverId,
-      mediaType: 'text',
+      mediaType: "text",
       roomKey: curChat.roomKey,
       content: inputValue,
       avatar: userInfo.avatar,
     };
     try {
       doSend(newMsg);
-      setInputValue('');
+      setInputValue("");
     } catch (err) {
       console.error(err);
-      toast.error('消息发送失败');
+      toast.error("消息发送失败");
     }
   };
 
@@ -86,7 +86,7 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
     setIsLoading(true);
     const file = ev.target.files[0];
     if (file.size > 2 * 1024 * 1024 * 1024) {
-      toast.error('文件大小不能超过 2G');
+      toast.error("文件大小不能超过 2G");
       setIsLoading(false);
       return;
     }
@@ -106,37 +106,37 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
           doSend(newMsg);
         } catch (err) {
           console.error(err);
-          toast.error('消息发送失败');
+          toast.error("消息发送失败");
         }
       } else {
-        toast.error('文件上传失败');
+        toast.error("文件上传失败");
       }
     } catch (err) {
       console.error(err);
-      toast.error('文件上传失败');
+      toast.error("文件上传失败");
     } finally {
       setIsLoading(false);
-      imgOrVideoInputRef.current!.value = '';
-      fileInputRef.current!.value = '';
+      imgOrVideoInputRef.current!.value = "";
+      fileInputRef.current!.value = "";
     }
   };
 
   const handleClickIcon = async (key: MsgIconKey) => {
     switch (key) {
-      case 'WinkingFace':
+      case "WinkingFace":
         setShowEmojiPicker((prev) => !prev);
         break;
-      case 'PictureAlbum':
+      case "PictureAlbum":
         imgOrVideoInputRef.current?.click();
         break;
-      case 'FileCode':
+      case "FileCode":
         fileInputRef.current?.click();
         break;
-      case 'PhoneTelephone':
+      case "PhoneTelephone":
         await fetchCalleeList();
         setMountAudioModal(true);
         break;
-      case 'VideoOne':
+      case "VideoOne":
         await fetchCalleeList();
         setMountVideoModal(true);
     }
@@ -168,11 +168,11 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
           })),
         );
       } else {
-        toast.error('获取群聊成员列表失败');
+        toast.error("获取群聊成员列表失败");
       }
     } catch (err) {
       console.error(err);
-      toast.error('获取群聊成员列表失败');
+      toast.error("获取群聊成员列表失败");
     }
   };
 
@@ -186,7 +186,7 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
       <div className="flex flex-1 items-center justify-between">
         <ul className="flex items-center gap-3">
           {MsgIconList.slice(0, 3).map((item, idx) => {
-            if (item.key === 'WinkingFace') {
+            if (item.key === "WinkingFace") {
               return (
                 <li key={item.key}>
                   <Popover
@@ -197,7 +197,7 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
                     placement="topLeft"
                   >
                     <Tooltip placement="top" title={item.title} arrow={false}>
-                      <item.IconInst size={'1.5rem'} className="cursor-pointer" />
+                      <item.IconInst size={"1.5rem"} className="cursor-pointer" />
                     </Tooltip>
                   </Popover>
                 </li>
@@ -206,13 +206,13 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
             return (
               <li key={item.key}>
                 <Tooltip
-                  placement={idx === 0 ? 'top' : 'bottomLeft'}
+                  placement={idx === 0 ? "top" : "bottomLeft"}
                   title={item.title}
                   arrow={false}
                 >
                   <item.IconInst
                     onClick={() => handleClickIcon(item.key as MsgIconKey)}
-                    size={'1.5rem'}
+                    size={"1.5rem"}
                   />
                 </Tooltip>
               </li>
@@ -226,7 +226,7 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
               <Tooltip placement="bottomLeft" title={item.title} arrow={false}>
                 <item.IconInst
                   onClick={() => handleClickIcon(item.key as MsgIconKey)}
-                  size={'1.5rem'}
+                  size={"1.5rem"}
                 />
               </Tooltip>
             </li>
@@ -267,7 +267,7 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
         <AudioModal
           mountModal={mountAudioModal}
           setMountModal={setMountAudioModal}
-          type={friendOrGroup(curChat) ? 'friend' : 'group'}
+          type={friendOrGroup(curChat) ? "friend" : "group"}
           roomKey={curChat.roomKey}
           callReceiverList={callReceiverList}
           state="initial"
@@ -277,7 +277,7 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
         <VideoModal
           mountModal={mountVideoModal}
           setMountModal={setMountVideoModal}
-          type={friendOrGroup(curChat) ? 'friend' : 'group'}
+          type={friendOrGroup(curChat) ? "friend" : "group"}
           roomKey={curChat.roomKey}
           callReceiverList={callReceiverList}
           state="initial"

@@ -268,6 +268,15 @@ export async function connChat(ws: WebSocket, url: string): Promise<void> {
         file_size: typeof msgObj.fileSize === "number" ? msgObj.fileSize : 0,
         state: 0,
       };
+      const roomValid =
+        type === "friend"
+          ? await db("friends").select("id").where("room_key", roomKey).first()
+          : await db("groups").select("id").where("room_key", roomKey).first();
+      if (!roomValid) {
+        ws.send(JSON.stringify({ code: BASE_STATE.Err, msg: "会话失效" }));
+        ws.close();
+        return;
+      }
       await writeAndSend(type, roomKey, writeMsg, msgObj);
     });
 

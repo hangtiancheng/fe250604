@@ -1,18 +1,18 @@
-import { FriendList, IFriendItem } from '@/types/friend';
-import { ICreateGroupDto, IGroupExt } from '@/types/group';
-import { Button, Form, Input, Modal, Tree } from 'antd';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import ImgContainer from '../img-container';
-import useToast from '@/hooks/use-toast';
-import { fetchFriendListApi } from '@/apis/friend';
-import { BaseState, GroupState } from '@/utils/constants';
-import ImgUploader from '../img-uploader';
-import { addFriends2groupApi, createGroupApi } from '@/apis/group';
+import { FriendList, IFriendItem } from "@/types/friend";
+import { ICreateGroupDto, IGroupExt } from "@/types/group";
+import { Button, Form, Input, Modal, Tree } from "antd";
+import { useEffect, useMemo, useRef, useState } from "react";
+import ImgContainer from "../img-container";
+import useToast from "@/hooks/use-toast";
+import { fetchFriendListApi } from "@/apis/friend";
+import { BaseState, GroupState } from "@/utils/constants";
+import ImgUploader from "../img-uploader";
+import { addFriends2groupApi, createGroupApi } from "@/apis/group";
 
 interface IProps {
   mountModal: boolean;
   setMountModal: (newMountModal: boolean) => void;
-  type: 'addFriends' | 'createGroup';
+  type: "addFriends" | "createGroup";
   // type === 'addFriends' 时, 需要传递群聊详情
   curGroup?: IGroupExt;
 }
@@ -70,7 +70,7 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
       }
     } catch (err) {
       console.error(err);
-      toast.error('获取好友列表失败');
+      toast.error("获取好友列表失败");
     }
   };
 
@@ -82,11 +82,11 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
     switch (step) {
       case 1:
         if (stepOneRef.current && stepTwoRef.current) {
-          stepOneRef.current.style.opacity = '1'; // 不透明度 1
-          stepTwoRef.current.style.opacity = '0'; // 不透明度 0
+          stepOneRef.current.style.opacity = "1"; // 不透明度 1
+          stepTwoRef.current.style.opacity = "0"; // 不透明度 0
           setTimeout(() => {
-            stepOneRef.current!.style.display = 'block';
-            stepTwoRef.current!.style.display = 'none';
+            stepOneRef.current!.style.display = "block";
+            stepTwoRef.current!.style.display = "none";
           }, 500);
         }
         break;
@@ -94,14 +94,14 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
       case 2:
         if (stepOneRef.current && stepTwoRef.current) {
           if (checkedFriendList.length === 0) {
-            toast.error('至少邀请 1 位好友');
+            toast.error("至少邀请 1 位好友");
             break;
           }
-          stepOneRef.current.style.opacity = '0'; // 不透明度 0
-          stepTwoRef.current.style.opacity = '1'; // 不透明度 1
+          stepOneRef.current.style.opacity = "0"; // 不透明度 0
+          stepTwoRef.current.style.opacity = "1"; // 不透明度 1
           setTimeout(() => {
-            stepOneRef.current!.style.display = 'none';
-            stepTwoRef.current!.style.display = 'block';
+            stepOneRef.current!.style.display = "none";
+            stepTwoRef.current!.style.display = "block";
           }, 500);
         }
         break;
@@ -126,9 +126,9 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
     groupName,
     groupAvatar,
     readme,
-  }: Omit<ICreateGroupDto, 'memberList'>) => {
+  }: Omit<ICreateGroupDto, "memberList">) => {
     if (checkedFriendList.length === 0) {
-      toast.error('至少邀请 1 位好友');
+      toast.error("至少邀请 1 位好友");
       return;
     }
     setIsLoading(true);
@@ -145,11 +145,11 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
         memberList,
       });
       if (res.code === BaseState.Ok) {
-        toast.success('创建群聊成功');
+        toast.success("创建群聊成功");
         setMountModal(false);
         return; // 仍会执行 finally 块
       } else {
-        toast.error('创建群聊失败');
+        toast.error("创建群聊失败");
       }
     } catch (err) {
       console.error(err);
@@ -160,7 +160,7 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
 
   const addFriends2group = async () => {
     if (checkedFriendList.length === 0) {
-      toast.error('至少邀请 1 位好友');
+      toast.error("至少邀请 1 位好友");
       return;
     }
     const friendList = checkedFriendList.map((item) => ({
@@ -174,14 +174,14 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
         friendList,
       });
       if (res.code === BaseState.Ok) {
-        toast.success('邀请成功');
+        toast.success("邀请成功");
         setMountModal(false);
         return;
       }
       if (res.code === GroupState.FriendJoined) {
-        toast.warning('邀请的好友已加入');
+        toast.warning("邀请的好友已加入");
       } else {
-        toast.error('邀请失败');
+        toast.error("邀请失败");
       }
     } catch (err) {
       console.error(err);
@@ -193,7 +193,7 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
   return (
     <div>
       <Modal
-        title={type === 'addFriends' ? '邀请好友' : '创建群聊'}
+        title={type === "addFriends" ? "邀请好友" : "创建群聊"}
         open={mountModal}
         onCancel={() => setMountModal(false)}
         footer={null}
@@ -217,7 +217,7 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
             </div>
           </div>
           <div className="flex flex-row-reverse">
-            {type === 'addFriends' ? (
+            {type === "addFriends" ? (
               <Button onClick={addFriends2group} loading={isLoading}>
                 邀请
               </Button>
@@ -229,14 +229,14 @@ const CreateGroupModal: React.FC<IProps> = (props: IProps) => {
 
         <div ref={stepTwoRef} className="hidden duration-1000">
           <Form form={createGroupFormInst} onFinish={handleCreateGroup}>
-            <Form.Item rules={[{ required: true, message: '请上传群聊头像' }]} name="groupAvatar">
+            <Form.Item rules={[{ required: true, message: "请上传群聊头像" }]} name="groupAvatar">
               <ImgUploader
                 onUploadOk={(filePath) => {
                   createGroupFormInst.setFieldsValue({ groupAvatar: filePath });
                 }}
               />
             </Form.Item>
-            <Form.Item rules={[{ required: true, message: '请输入群聊名' }]} name="groupName">
+            <Form.Item rules={[{ required: true, message: "请输入群聊名" }]} name="groupName">
               <Input maxLength={15} showCount={true} placeholder="请输入群聊名" />
             </Form.Item>
             <Form.Item name="readme">

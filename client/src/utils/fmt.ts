@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 enum MsgClass {
   NewMsg = 1,
@@ -34,15 +34,15 @@ export function fmtTime4list(dateLike: number | string | Date): string {
   const day = dayjs(dateLike);
   switch (type) {
     case MsgClass.NewMsg:
-      return '刚刚';
+      return "刚刚";
     case MsgClass.TodayMsg:
-      return day.format('H:mm');
+      return day.format("H:mm");
     case MsgClass.YesterdayMsg:
-      return '昨天';
+      return "昨天";
     case MsgClass.YearMsg:
-      return day.format('M月D日');
+      return day.format("M月D日");
     case MsgClass.OtherMsg:
-      return day.format('YYYY年M月D日');
+      return day.format("YYYY年M月D日");
   }
 }
 
@@ -51,23 +51,23 @@ export function fmtTime4chat(dateLike: number | string | Date): string {
   // const day = dayjs(dateLike);
   switch (type) {
     case MsgClass.NewMsg:
-      return '刚刚';
+      return "刚刚";
     case MsgClass.TodayMsg:
-      return dayjs(dateLike).format('H:mm');
+      return dayjs(dateLike).format("H:mm");
     case MsgClass.YesterdayMsg:
-      return dayjs(dateLike).format('昨天 H:mm');
+      return dayjs(dateLike).format("昨天 H:mm");
     case MsgClass.YearMsg:
-      return dayjs(dateLike).format('M月D日 AH:mm').replace('AM', '上午').replace('PM', '下午');
+      return dayjs(dateLike).format("M月D日 AH:mm").replace("AM", "上午").replace("PM", "下午");
     case MsgClass.OtherMsg:
       return dayjs(dateLike)
-        .format('YYYY年M月D日 AH:mm')
-        .replace('AM', '上午')
-        .replace('PM', '下午');
+        .format("YYYY年M月D日 AH:mm")
+        .replace("AM", "上午")
+        .replace("PM", "下午");
   }
 }
 
 export function fmtTime4call(duration: number): string {
-  const pad0 = (num: number) => num.toString().padStart(2, '0');
+  const pad0 = (num: number) => num.toString().padStart(2, "0");
   const h = Math.floor(duration / 3600);
   const m = Math.floor((duration % 3600) / 60);
   const s = duration % 60;

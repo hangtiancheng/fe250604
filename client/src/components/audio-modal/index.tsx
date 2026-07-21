@@ -1,24 +1,24 @@
-import { ICallReceiver } from '@/types/chat';
-import { fetchCallersApi } from '@/apis/rtc';
-import useToast from '@/hooks/use-toast';
-import useUserInfoStore from '@/store/user-info';
-import { BaseState } from '@/utils/constants';
-import { formatCallTime } from '@/utils/time';
-import { Drawer, Empty, Modal } from 'antd';
-import { useEffect, useRef, useState } from 'react';
-import ImgContainer from '../img-container';
-import { PhoneCall, PhoneMissed, VolumeMute, VolumeNotice, PeopleSpeak } from '@icon-park/react';
+import { ICallReceiver } from "@/types/chat";
+import { fetchCallersApi } from "@/apis/rtc";
+import useToast from "@/hooks/use-toast";
+import useUserInfoStore from "@/store/user-info";
+import { BaseState } from "@/utils/constants";
+import { formatCallTime } from "@/utils/time";
+import { Drawer, Empty, Modal } from "antd";
+import { useEffect, useRef, useState } from "react";
+import ImgContainer from "../img-container";
+import { PhoneCall, PhoneMissed, VolumeMute, VolumeNotice, PeopleSpeak } from "@icon-park/react";
 
 interface IProps {
   mountModal: boolean;
   setMountModal: (newMountModal: boolean) => void;
-  type: 'friend' | 'group';
+  type: "friend" | "group";
   roomKey: string;
   callReceiverList: ICallReceiver[];
-  state: 'initial' | 'receive' | 'calling';
+  state: "initial" | "receive" | "calling";
 }
 
-type CallState = 'initial' | 'receive' | 'calling';
+type CallState = "initial" | "receive" | "calling";
 
 interface ICallPeer {
   PC: RTCPeerConnection | null;
@@ -36,12 +36,12 @@ interface IRoomMember {
 }
 
 enum RtcCmd {
-  CreateRtcRoom = 'createRtcRoom',
-  AddPeer = 'addPeer',
-  Offer = 'offer',
-  Answer = 'answer',
-  IceCandidate = 'iceCandidate',
-  Reject = 'reject',
+  CreateRtcRoom = "createRtcRoom",
+  AddPeer = "addPeer",
+  Offer = "offer",
+  Answer = "answer",
+  IceCandidate = "iceCandidate",
+  Reject = "reject",
 }
 
 const AudioModal: React.FC<IProps> = (props: IProps) => {
@@ -77,20 +77,20 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
     );
 
     ws.onopen = async () => {
-      if (callState === 'initial') {
+      if (callState === "initial") {
         try {
           await initStream();
           if (socket.current?.readyState === WebSocket.OPEN) {
             socket.current.send(
               JSON.stringify({
                 cmd: RtcCmd.CreateRtcRoom,
-                mode: type === 'friend' ? 'friendAudio' : 'groupAudio',
+                mode: type === "friend" ? "friendAudio" : "groupAudio",
                 receiverList: callReceiverList,
               }),
             );
           }
         } catch {
-          toast.error('获取音频流失败，请检查设备是否正常或者权限是否已开启');
+          toast.error("获取音频流失败，请检查设备是否正常或者权限是否已开启");
           if (socket.current?.readyState === WebSocket.OPEN) {
             socket.current.send(JSON.stringify({ cmd: RtcCmd.Reject }));
           }
@@ -116,7 +116,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
 
       // 服务端返回的错误
       if (msg.code && msg.code !== BaseState.Ok) {
-        toast.error(msg.msg || '音视频聊天失败');
+        toast.error(msg.msg || "音视频聊天失败");
         socket.current?.close();
         socket.current = null;
         localStream.current?.getAudioTracks().forEach((t) => t.stop());
@@ -126,12 +126,12 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
 
       switch (msg.cmd) {
         case RtcCmd.AddPeer: {
-          setCallState('calling');
-          if (type !== 'friend') {
+          setCallState("calling");
+          if (type !== "friend") {
             await fetchRoomMembers();
           }
           // 给新人发 offer
-          const sender = msg.sender ?? '';
+          const sender = msg.sender ?? "";
           if (callListRef.current[sender]?.PC) {
             localStream.current!.getTracks().forEach((track) => {
               callListRef.current[sender].PC!.addTrack(track, localStream.current!);
@@ -150,7 +150,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
         }
 
         case RtcCmd.Offer: {
-          const sender = msg.sender ?? '';
+          const sender = msg.sender ?? "";
           if (callListRef.current[sender]?.PC) {
             localStream.current!.getTracks().forEach((track) => {
               callListRef.current[sender].PC!.addTrack(track, localStream.current!);
@@ -172,7 +172,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
         }
 
         case RtcCmd.Answer: {
-          const sender = msg.sender ?? '';
+          const sender = msg.sender ?? "";
           if (callListRef.current[sender]?.PC) {
             await callListRef.current[sender].PC!.setRemoteDescription(
               new RTCSessionDescription(msg.data!.sdp!),
@@ -182,7 +182,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
         }
 
         case RtcCmd.IceCandidate: {
-          const sender = msg.sender ?? '';
+          const sender = msg.sender ?? "";
           if (callListRef.current[sender]?.PC) {
             await callListRef.current[sender].PC!.addIceCandidate(new RTCIceCandidate(msg.data!));
           }
@@ -190,14 +190,14 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
         }
 
         case RtcCmd.Reject: {
-          const sender = msg.sender ?? '';
-          if (type === 'friend') {
+          const sender = msg.sender ?? "";
+          if (type === "friend") {
             socket.current?.close();
             socket.current = null;
             localStream.current?.getAudioTracks().forEach((t) => t.stop());
             setTimeout(() => {
               setMountModal(false);
-              toast.info('对方已挂断');
+              toast.info("对方已挂断");
             }, 1500);
           } else {
             await fetchRoomMembers();
@@ -205,7 +205,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
             const audio = document.querySelector(
               `.audio_${CSS.escape(sender)}`,
             ) as HTMLAudioElement;
-            if (audio) audio.style.display = 'none';
+            if (audio) audio.style.display = "none";
           }
           break;
         }
@@ -213,7 +213,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
     };
 
     ws.onerror = () => {
-      toast.error('WebSocket 连接错误');
+      toast.error("WebSocket 连接错误");
     };
 
     socket.current = ws;
@@ -252,21 +252,21 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
     const receiver = callReceiverList.find((item) => item.email === email);
     callListRef.current[email] = {
       PC: pc,
-      alias: receiver?.alias || '',
-      avatar: receiver?.avatar || '',
+      alias: receiver?.alias || "",
+      avatar: receiver?.avatar || "",
     };
   };
 
   const handleAcceptCall = async () => {
-    setCallState('calling');
+    setCallState("calling");
     try {
       await initStream();
       socket.current?.send(JSON.stringify({ cmd: RtcCmd.AddPeer }));
-      if (type !== 'friend') {
+      if (type !== "friend") {
         await fetchRoomMembers();
       }
     } catch {
-      toast.error('获取音频流失败，请检查设备是否正常或者权限是否已开启');
+      toast.error("获取音频流失败，请检查设备是否正常或者权限是否已开启");
       socket.current?.send(JSON.stringify({ cmd: RtcCmd.Reject }));
       socket.current?.close();
       socket.current = null;
@@ -283,7 +283,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
     setTimeout(() => {
       setMountModal(false);
       localStream.current?.getAudioTracks().forEach((t) => t.stop());
-      toast.info(type === 'friend' ? '已挂断通话' : '已退出群语音通话');
+      toast.info(type === "friend" ? "已挂断通话" : "已退出群语音通话");
     }, 1500);
   };
 
@@ -299,7 +299,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
         );
       }
     } catch {
-      toast.error('获取房间成员失败');
+      toast.error("获取房间成员失败");
     }
   };
 
@@ -333,7 +333,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
 
   // 通话计时
   useEffect(() => {
-    if (callState === 'calling') {
+    if (callState === "calling") {
       const timer = setInterval(() => setDuration((d) => d + 1), 1000);
       return () => clearInterval(timer);
     }
@@ -344,20 +344,20 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
       open={mountModal}
       footer={null}
       width={400}
-      title={`${type === 'friend' ? '' : '群'}语音通话`}
+      title={`${type === "friend" ? "" : "群"}语音通话`}
       maskClosable={false}
-      closable={type !== 'friend'}
+      closable={type !== "friend"}
       onCancel={async () => {
-        if (type !== 'friend') {
+        if (type !== "friend") {
           setShowMemberDrawer(!showMemberDrawer);
-          if (callState !== 'calling') await fetchRoomMembers();
+          if (callState !== "calling") await fetchRoomMembers();
         }
       }}
     >
       <div className="flex flex-col items-center justify-center py-8">
         {/* 头像 */}
         <div className="mb-4 h-20 w-20 overflow-hidden rounded-full">
-          {type === 'friend' ? (
+          {type === "friend" ? (
             <ImgContainer
               src={callReceiverList[0]?.avatar}
               className="h-full w-full object-cover"
@@ -370,12 +370,12 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
         </div>
 
         {/* 发起中 */}
-        {callState === 'initial' && (
+        {callState === "initial" && (
           <>
             <p className="mb-6 text-sm text-gray-600">
-              {type === 'friend'
+              {type === "friend"
                 ? `对 ${callReceiverList[0]?.alias} 发起语音通话`
-                : '发起群语音通话'}
+                : "发起群语音通话"}
             </p>
             <div className="flex gap-8">
               <button
@@ -389,12 +389,12 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
         )}
 
         {/* 接听中 */}
-        {callState === 'receive' && (
+        {callState === "receive" && (
           <>
             <p className="mb-6 text-sm text-gray-600">
-              {type === 'friend'
+              {type === "friend"
                 ? `${callReceiverList[0]?.alias} 发起语音通话`
-                : '有人邀请您加入群语音通话'}
+                : "有人邀请您加入群语音通话"}
             </p>
             <div className="flex gap-8">
               <button
@@ -414,7 +414,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
         )}
 
         {/* 通话中 */}
-        {callState === 'calling' && (
+        {callState === "calling" && (
           <>
             {/* 隐藏的 audio 元素 */}
             {Object.keys(callList).map((email) => {
@@ -424,7 +424,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
                   key={email}
                   className={`audio_${CSS.escape(email)}`}
                   autoPlay
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                 />
               );
             })}
@@ -441,7 +441,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
         )}
 
         {/* 群通话成员抽屉 */}
-        {type !== 'friend' && (
+        {type !== "friend" && (
           <Drawer
             title="当前正在通话的群成员"
             placement="right"

@@ -2,7 +2,7 @@
   // position: relative; // 父元素相对定位, 参考点: 原位置
   z-index: 1;
   &::before {
-    content: '';
+    content: "";
     position: absolute; // 子元素绝对定位, 参考点: 包含块
     top: 0;
     left: 0;

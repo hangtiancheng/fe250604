@@ -17,7 +17,7 @@ export interface IMergeChunksParams {
 }
 
 export interface IMediaItem {
-  type: 'image' | 'video';
+  type: "image" | "video";
   url: string;
   size: { width: number; height: number };
 }

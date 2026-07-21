@@ -254,6 +254,13 @@ export async function deleteFriend(ctx: AppContext): Promise<void> {
         await trx("friends").where("id", Number(id)).del();
       }
     });
+    if (roomKey && global.__chat_rooms__[roomKey]) {
+      for (const ws of Object.values(global.__chat_rooms__[roomKey])) {
+        ws.close();
+      }
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete global.__chat_rooms__[roomKey];
+    }
     pub({ receiverEmail: friendEmail, type: "wsFetchFriendList" });
     pub({ receiverEmail: sender.email, type: "wsFetchFriendList" });
     pub({ receiverEmail: friendEmail, type: "wsFetchChatList" });

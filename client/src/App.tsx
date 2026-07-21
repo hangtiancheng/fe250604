@@ -1,10 +1,10 @@
-import zhCN from 'antd/es/locale/zh_CN';
-import { App as AntdApp, ConfigProvider } from 'antd';
-import useViewStore from './store/view';
-import useTokenStore from './store/token';
-import Login from './pages/login';
-import Register from './pages/register';
-import Home from './pages/home';
+import zhCN from "antd/es/locale/zh_CN";
+import { App as AntdApp, ConfigProvider } from "antd";
+import useViewStore from "./store/view";
+import useTokenStore from "./store/token";
+import Login from "./pages/login";
+import Register from "./pages/register";
+import Home from "./pages/home";
 
 export default function App() {
   const view = useViewStore((state) => state.view);
@@ -12,10 +12,10 @@ export default function App() {
 
   let page: React.ReactNode;
   switch (view) {
-    case 'register':
+    case "register":
       page = <Register />;
       break;
-    case 'home':
+    case "home":
       page = token ? <Home /> : <Login />;
       break;
     default:
@@ -26,7 +26,7 @@ export default function App() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#8bc34a',
+          colorPrimary: "#8bc34a",
           borderRadius: 16,
         },
         components: {

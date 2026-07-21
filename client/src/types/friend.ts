@@ -16,7 +16,7 @@ export interface IFriendItem {
   avatar: string; // friends 表字段 avatar, 好友头像
   email: string; // friends 表字段 email, 好友邮箱
   noteName: string; // friends 表字段 note_name, 好友备注
-  state: 'online' | 'offline'; // friends 表字段 state, 好友状态
+  state: "online" | "offline"; // friends 表字段 state, 好友状态
   tagId: number; // friends 表字段 tag_id, 好友的标签 ID
   unreadCnt: number; // friends 表字段 unread_cnt, 未读消息数
   userId: number; // friends 表字段 user_id, 所属用户 ID
