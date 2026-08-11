@@ -165,4 +165,9 @@ export const DbConfigSchema = z.object({
   database: z.string(),
 });
 
+export const RedisConfigSchema = z.object({
+  redisHost: z.string(),
+  redisPort: z.number(),
+});
+
 export { LoginSchema, LogoutSchema, RegisterSchema, UpdatePwdSchema, UpdateUserInfoSchema };

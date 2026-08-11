@@ -7,6 +7,7 @@ import { USER_STATE, BASE_STATE } from "../utils/state.js";
 import db from "../utils/query.js";
 import { secretKey } from "../utils/auth.js";
 import pub from "../utils/pub.js";
+import raw from "../utils/conf.js";
 import type { AppContext, UserRecord } from "../types.js";
 import {
   LoginSchema,
@@ -14,11 +15,18 @@ import {
   RegisterSchema,
   UpdatePwdSchema,
   UpdateUserInfoSchema,
+  RedisConfigSchema,
 } from "../schema/index.js";
 
+let redisConf = { redisHost: "127.0.0.1", redisPort: 6379 };
+const result = RedisConfigSchema.partial().safeParse(raw);
+if (result.success) {
+  redisConf = { ...redisConf, ...result.data };
+}
+
 const redis = new Redis({
-  host: "127.0.0.1",
-  port: 6379,
+  host: redisConf.redisHost,
+  port: redisConf.redisPort,
 });
 
 export async function login(ctx: AppContext): Promise<void> {

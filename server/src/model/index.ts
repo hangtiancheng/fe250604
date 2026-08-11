@@ -1,8 +1,7 @@
 import knex, { type Knex } from "knex";
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 
 import { DbConfigSchema } from "../schema/index.js";
+import raw from "../utils/conf.js";
 
 interface DbConfig {
   host: string;
@@ -17,18 +16,12 @@ let conf: DbConfig = {
   port: 3306,
   user: "root",
   password: "pass",
-  database: "fe_250604",
+  database: "fe250604",
 };
 
-const confPath = join(process.cwd(), "./conf.json");
-if (existsSync(confPath)) {
-  const parsed = JSON.parse(readFileSync(confPath, { encoding: "utf-8" }));
-  const result = DbConfigSchema.partial().safeParse(parsed);
-  if (result.success) {
-    conf = { ...conf, ...result.data };
-  }
-} else {
-  console.warn(`[server] ${join(process.cwd(), "./conf.json")} not found`);
+const result = DbConfigSchema.partial().safeParse(raw);
+if (result.success) {
+  conf = { ...conf, ...result.data };
 }
 
 const db: Knex = knex({
@@ -77,7 +70,7 @@ async function initSchema(): Promise<void> {
 
   await ensureTable("tags", (table) => {
     table.increments("id").primary();
-    table.integer("user_id").notNullable().index("idx_user_id");
+    table.integer("user_id").unsigned().notNullable().index("idx_user_id");
     table.string("user_email", 255).notNullable();
     table.string("name", 255).notNullable();
     table.timestamp("created_at").defaultTo(db.fn.now());
@@ -90,7 +83,7 @@ async function initSchema(): Promise<void> {
   await ensureTable("groups", (table) => {
     table.increments("id").primary();
     table.string("name", 255).notNullable();
-    table.integer("creator_id").notNullable().index("idx_creator_id");
+    table.integer("creator_id").unsigned().notNullable().index("idx_creator_id");
     table.string("room_key", 255).notNullable().unique();
     table.text("avatar", "longtext").nullable();
     table.text("readme", "text").nullable();
@@ -108,7 +101,7 @@ async function initSchema(): Promise<void> {
     table.string("email", 255).notNullable();
     table.text("avatar", "longtext").nullable();
     table.string("note_name", 255).nullable();
-    table.integer("tag_id").nullable().index("idx_tag_id");
+    table.integer("tag_id").unsigned().nullable().index("idx_tag_id");
     table.enu("state", ["online", "offline"]).defaultTo("offline");
     table.integer("unread_cnt").notNullable().defaultTo(0);
     table.string("room_key", 255).nullable();
@@ -122,7 +115,7 @@ async function initSchema(): Promise<void> {
   await ensureTable("group_members", (table) => {
     table.increments("id").primary();
     table.string("nickname", 255).notNullable();
-    table.integer("group_id").notNullable().index("idx_group_id");
+    table.integer("group_id").unsigned().notNullable().index("idx_group_id");
     table.integer("user_id").notNullable().index("idx_user_id");
     table.timestamp("created_at").defaultTo(db.fn.now());
     table
@@ -133,7 +126,7 @@ async function initSchema(): Promise<void> {
 
   await ensureTable("messages", (table) => {
     table.increments("id").primary();
-    table.integer("sender_id").notNullable();
+    table.integer("sender_id").unsigned().notNullable();
     table.integer("receiver_id").notNullable();
     table.text("content", "longtext").notNullable();
     table.string("room_key", 255).notNullable();

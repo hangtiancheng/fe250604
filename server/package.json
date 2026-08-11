@@ -1,13 +1,13 @@
 {
   "name": "server",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "build": "rollup -c ./rollup.config.js",
     "build:tsup": "tsup --config ./tsup.config.ts",
-    "dev": "rollup -c ./rollup.config.js -w",
-    "dev:watch": "concurrently \"rollup -c -w\" \"node ./dist/index.js --watch ./src\"",
+    "build:watch": "rollup -c ./rollup.config.js -w",
+    "dev": "concurrently \"rollup -c -w\" \"node ./dist/index.js --watch ./src\"",
     "lint": "eslint . --fix",
     "format": "prettier -w ./"
   },
