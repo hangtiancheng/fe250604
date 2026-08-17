@@ -6,7 +6,6 @@ import "@/assets/styles/tailwind.css";
 import "@/assets/styles/global.scss";
 import "@ant-design/v5-patch-for-react-19";
 import App from "./App";
-import { StrictMode } from "react";
 
 // localStorage.removeItem('userInfo');
 // localStorage.removeItem('token');
@@ -16,7 +15,5 @@ const container = document.getElementById("root") as HTMLDivElement;
 const root = createRoot(container);
 
 root.render(
-  <StrictMode>
     <App />
-  </StrictMode>,
 );
