@@ -26,11 +26,20 @@ export default function App() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#8bc34a",
-          borderRadius: 16,
+          colorPrimary: "#6366f1",
+          borderRadius: 10,
+          colorBgContainer: "#ffffff",
+          colorBorder: "#e2e8f0",
+          colorText: "#1e293b",
+          colorTextSecondary: "#64748b",
+          fontFamily:
+            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
         },
         components: {
           Tree: { indentSize: 0 },
+          Button: { borderRadius: 8 },
+          Input: { borderRadius: 8 },
+          Modal: { borderRadiusLG: 16 },
         },
       }}
       locale={zhCN}

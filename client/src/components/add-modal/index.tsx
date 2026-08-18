@@ -126,36 +126,46 @@ const AddModal: React.FC<IProps> = (props: IProps) => {
       label: "加好友",
       children: (
         <div>
-          <div className="flex items-center justify-between gap-5">
+          <div className="flex items-center gap-2">
             <Input
-              placeholder="请输入好友的邮箱"
-              prefix={<Search theme="outline" size="24" fill="#333" />}
+              placeholder="输入好友邮箱"
+              prefix={<Search theme="outline" size="16" fill="#94a3b8" />}
               onChange={(ev) => handleChangeFriendName(ev)}
+              onPressEnter={() => _fetchFriendListByEmail(friendEmail)}
             />
             <Button type="primary" onClick={() => _fetchFriendListByEmail(friendEmail)}>
               查找
             </Button>
           </div>
           {friendList.length === 0 ? (
-            <Empty />
+            <Empty className="mt-6" description="输入邮箱搜索好友" />
           ) : (
-            <div className="mt-3 flex flex-col gap-y-3">
+            <div className="mt-4 space-y-2">
               {friendList.map((item) => (
-                <div key={item.id} className="grid grid-cols-4 items-center">
-                  <ImgContainer src={item.avatar} className="h-20 rounded-full" />
-                  <div className="col-span-2 truncate">
-                    <div>邮箱 {item.email}</div>
-                    <div>用户名 {item.username}</div>
+                <div
+                  key={item.id}
+                  className="border-surface-200 flex items-center gap-3 rounded-xl border p-3"
+                >
+                  <ImgContainer
+                    src={item.avatar}
+                    className="h-11 w-11 shrink-0 rounded-lg object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-surface-700 truncate text-sm font-medium">
+                      {item.username}
+                    </div>
+                    <div className="text-surface-400 truncate text-xs">{item.email}</div>
                   </div>
                   {item.flag ? (
-                    <div className="justify-self-center">已经是好友了</div>
+                    <span className="text-surface-400 shrink-0 text-xs">已是好友</span>
                   ) : (
                     <Button
-                      className="justify-self-center"
+                      size="small"
+                      type="primary"
                       onClick={() => handleAddFriend(item.id, item.email, item.avatar)}
                       loading={isLoading}
                     >
-                      加好友
+                      添加
                     </Button>
                   )}
                 </div>
@@ -170,36 +180,44 @@ const AddModal: React.FC<IProps> = (props: IProps) => {
       label: "加群聊",
       children: (
         <div>
-          <div className="flex items-center justify-between gap-5">
+          <div className="flex items-center gap-2">
             <Input
-              placeholder="请输入群聊名"
-              prefix={<Search theme="outline" size="24" fill="#333" />}
+              placeholder="输入群聊名称"
+              prefix={<Search theme="outline" size="16" fill="#94a3b8" />}
               onChange={handleChangeGroupName}
+              onPressEnter={() => _fetchGroupListByName(groupName)}
             />
             <Button type="primary" onClick={() => _fetchGroupListByName(groupName)}>
               查找
             </Button>
           </div>
           {groupList.length === 0 ? (
-            <Empty />
+            <Empty className="mt-6" description="输入名称搜索群聊" />
           ) : (
-            <div className="mt-3 flex flex-col gap-y-3">
+            <div className="mt-4 space-y-2">
               {groupList.map((item) => (
-                <div key={item.id} className="grid grid-cols-4 items-center">
-                  <ImgContainer src={item.avatar} className="h-20 rounded-full" />
-                  <div className="col-span-2 truncate">
-                    <div>群聊名 {item.name}</div>
-                    <div>群聊人数 {item.memberNum} </div>
+                <div
+                  key={item.id}
+                  className="border-surface-200 flex items-center gap-3 rounded-xl border p-3"
+                >
+                  <ImgContainer
+                    src={item.avatar}
+                    className="h-11 w-11 shrink-0 rounded-lg object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-surface-700 truncate text-sm font-medium">{item.name}</div>
+                    <div className="text-surface-400 text-xs">{item.memberNum} 人</div>
                   </div>
                   {item.flag ? (
-                    <div className="justify-self-center">已经在群聊中了</div>
+                    <span className="text-surface-400 shrink-0 text-xs">已加入</span>
                   ) : (
                     <Button
-                      className="justify-self-center"
+                      size="small"
+                      type="primary"
                       onClick={() => handleAddSelf2group(item.id)}
                       loading={isLoading}
                     >
-                      加入群聊
+                      加入
                     </Button>
                   )}
                 </div>
@@ -212,17 +230,14 @@ const AddModal: React.FC<IProps> = (props: IProps) => {
   ];
 
   return (
-    <div>
-      <Modal
-        open={mountModal}
-        footer={null}
-        onCancel={() => {
-          setMountModal(false);
-        }}
-      >
-        <Tabs defaultActiveKey="addFriend" items={tabItems} />
-      </Modal>
-    </div>
+    <Modal
+      open={mountModal}
+      footer={null}
+      onCancel={() => setMountModal(false)}
+      title="添加好友或群聊"
+    >
+      <Tabs defaultActiveKey="addFriend" items={tabItems} className="mt-2" />
+    </Modal>
   );
 };
 

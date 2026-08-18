@@ -70,53 +70,52 @@ const PwdModal: React.FC<IProps> = (props: IProps) => {
   };
 
   return (
-    <>
-      <Modal
-        title="更新密码"
-        open={mountModal}
-        confirmLoading={isLoading}
-        onCancel={() => setMountModal(false)}
-        footer={null}
+    <Modal
+      title="修改密码"
+      open={mountModal}
+      confirmLoading={isLoading}
+      onCancel={() => setMountModal(false)}
+      footer={null}
+    >
+      <Form
+        onFinish={handleUpdatePwd}
+        initialValues={{
+          email: userInfo.email,
+        }}
+        form={userInfoFormInst}
+        className="mt-4"
       >
-        <Form
-          onFinish={handleUpdatePwd}
-          initialValues={{
-            email: userInfo.email,
-          }}
-          form={userInfoFormInst}
+        <Form.Item name="email">
+          <Input type="text" placeholder="邮箱" disabled />
+        </Form.Item>
+        <Form.Item
+          name="password"
+          rules={[
+            { required: true, message: "请输入新密码" },
+            { max: 15, message: "密码最多 15 个字符" },
+          ]}
         >
-          <Form.Item name="email">
-            <Input type="text" placeholder="邮箱" disabled />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            rules={[
-              { required: true, message: "请输入新密码" },
-              { max: 15, message: "密码最多 15 个字符" },
-            ]}
-          >
-            <Input type="password" placeholder="请输入新密码" />
-          </Form.Item>
-          <Form.Item
-            name="confirmPwd"
-            rules={[
-              { required: true, message: "请确认新密码" },
-              { max: 15, message: "密码最多 15 个字符" },
-            ]}
-          >
-            <Input type="password" placeholder="请确认新密码" />
-          </Form.Item>
-          <Form.Item>
-            <Button type="default" onClick={() => setMountModal(false)}>
-              取消
+          <Input type="password" placeholder="新密码" />
+        </Form.Item>
+        <Form.Item
+          name="confirmPwd"
+          rules={[
+            { required: true, message: "请确认新密码" },
+            { max: 15, message: "密码最多 15 个字符" },
+          ]}
+        >
+          <Input type="password" placeholder="确认新密码" />
+        </Form.Item>
+        <Form.Item className="mb-0">
+          <div className="flex justify-end gap-2">
+            <Button onClick={() => setMountModal(false)}>取消</Button>
+            <Button type="primary" htmlType="submit" loading={isLoading}>
+              确认修改
             </Button>
-            <Button type="primary" htmlType="submit">
-              确认
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-    </>
+          </div>
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 };
 

@@ -10,8 +10,6 @@ import { BaseState } from "@/utils/constants";
 import { IUserInfo } from "@/types/user";
 import ForgetPwdModal from "@/components/forget-pwd-modal";
 
-import styles from "./index.module.scss";
-
 const Login: React.FC = () => {
   const tokenStore = useTokenStore();
   const userInfoStore = useUserInfoStore();
@@ -84,7 +82,7 @@ const Login: React.FC = () => {
 
   const handleRemember = () => {
     const newIsRemember = !isRemember;
-    setRemember(newIsRemember); // 异步
+    setRemember(newIsRemember);
     localStorage.setItem("isRemember", `${newIsRemember}`);
     if (!newIsRemember) {
       localStorage.removeItem("token");
@@ -92,30 +90,34 @@ const Login: React.FC = () => {
     }
   };
 
-  useEffect(
-    () => {
-      readLocal().then((val) => {
-        if (val) {
-          loginFormInst.setFieldsValue({
-            email: val.userInfo.email,
-            password: genRandStr().slice(0, 15),
-          });
-          setRemember(true);
-        } else {
-          setRemember(false);
-        }
-      });
-    },
-    [], //! onMounted
-  );
+  useEffect(() => {
+    readLocal().then((val) => {
+      if (val) {
+        loginFormInst.setFieldsValue({
+          email: val.userInfo.email,
+          password: genRandStr().slice(0, 15),
+        });
+        setRemember(true);
+      } else {
+        setRemember(false);
+      }
+    });
+  }, []);
 
   return (
-    <div className="bg-theme h-dvh w-dvw bg-cover bg-center bg-no-repeat">
-      <div
-        className={`${styles.loginContainer} absolute top-[50%] right-[10%] w-100 translate-y-[-50%] px-7`}
-      >
-        <h1 className="my-5 text-3xl text-slate-700">欢迎登录</h1>
-        <Form onFinish={handleLogin} form={loginFormInst}>
+    <div className="from-surface-900 via-surface-800 to-primary-950 flex h-dvh w-dvw items-center justify-center bg-gradient-to-br">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="bg-primary-500/10 absolute -top-40 -right-40 h-96 w-96 rounded-full blur-3xl" />
+        <div className="bg-primary-400/10 absolute -bottom-40 -left-40 h-96 w-96 rounded-full blur-3xl" />
+      </div>
+
+      <div className="shadow-float relative w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-10 backdrop-blur-xl">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-semibold tracking-tight text-white">欢迎回来</h1>
+          <p className="text-surface-400 mt-2 text-sm">登录你的账号，继续聊天</p>
+        </div>
+
+        <Form onFinish={handleLogin} form={loginFormInst} size="large">
           <Form.Item
             name="email"
             rules={[
@@ -123,7 +125,11 @@ const Login: React.FC = () => {
               { max: 30, message: "邮箱最多 30 个字符" },
             ]}
           >
-            <Input placeholder="请输入邮箱" maxLength={30} />
+            <Input
+              placeholder="邮箱地址"
+              maxLength={30}
+              className="placeholder:text-surface-500 rounded-lg border-white/10 bg-white/5 text-white"
+            />
           </Form.Item>
           <Form.Item
             name="password"
@@ -132,34 +138,55 @@ const Login: React.FC = () => {
               { max: 15, message: "密码最多 15 个字符" },
             ]}
           >
-            <Input placeholder="请输入密码" maxLength={15} type="password" />
+            <Input
+              placeholder="密码"
+              maxLength={15}
+              type="password"
+              className="placeholder:text-surface-500 rounded-lg border-white/10 bg-white/5 text-white"
+            />
           </Form.Item>
-          <Form.Item>
-            <div className="flex cursor-pointer flex-row-reverse gap-5 text-slate-700">
-              <div className="" onClick={() => setMountPwdModal(true)}>
-                忘记密码
-              </div>
+          <Form.Item className="mb-4">
+            <div className="flex items-center justify-between text-sm">
               <Checkbox onChange={handleRemember} checked={isRemember}>
-                <div className="text-slate-700">记住密码</div>
+                <span className="text-surface-400">记住密码</span>
               </Checkbox>
+              <button
+                type="button"
+                className="text-primary-400 hover:text-primary-300 transition-colors"
+                onClick={() => setMountPwdModal(true)}
+              >
+                忘记密码
+              </button>
             </div>
           </Form.Item>
-          <Form.Item>
-            <div className="flex items-center justify-center gap-5">
-              <Button type="primary" loading={isLoading} htmlType="submit">
-                登录
-              </Button>
-              <div className="">
-                <a onClick={() => viewStore.setView("register")}>没有账号? 去注册</a>
-              </div>
-            </div>
+          <Form.Item className="mb-4">
+            <Button
+              type="primary"
+              loading={isLoading}
+              htmlType="submit"
+              block
+              className="shadow-primary-500/25 h-11 rounded-lg text-base font-medium shadow-lg"
+            >
+              登录
+            </Button>
           </Form.Item>
         </Form>
 
-        {mountPwdModal && (
-          <ForgetPwdModal mountModal={mountPwdModal} setMountModal={setMountPwdModal} />
-        )}
+        <div className="text-surface-400 text-center text-sm">
+          还没有账号？
+          <button
+            type="button"
+            className="text-primary-400 hover:text-primary-300 ml-1 transition-colors"
+            onClick={() => viewStore.setView("register")}
+          >
+            立即注册
+          </button>
+        </div>
       </div>
+
+      {mountPwdModal && (
+        <ForgetPwdModal mountModal={mountPwdModal} setMountModal={setMountPwdModal} />
+      )}
     </div>
   );
 };

@@ -15,7 +15,7 @@ import { Empty } from "antd";
 import { useEffect, useImperativeHandle, useRef, useState } from "react";
 
 export interface IChatRef {
-  fetchChatList: () => void; // 刷新消息列表
+  fetchChatList: () => void;
 }
 
 interface IProps {
@@ -29,7 +29,7 @@ const friendOrGroup = (item: IFriendExt | IGroupExt): item is IFriendExt =>
 const friendOrGroup2 = (item: IChatItem): item is IChatItem =>
   "receiverEmail" in item && item.receiverEmail !== undefined;
 
-const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
+const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps) => {
   const toast = useToast();
   const userInfoStore = useUserInfoStore();
   const userInfo = userInfoStore.userInfo;
@@ -74,7 +74,6 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
 
   const connWs = (params: { roomKey: string; senderId: number; type: string }) => {
     const { roomKey, senderId, type } = params;
-    // 关闭旧连接
     if (socket.current) {
       socket.current.close();
       socket.current = null;
@@ -120,7 +119,6 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
           toast.error("获取聊天列表失败");
           return;
         }
-        // res.code === BaseState.Ok
         const chatList = res.data;
         setChatList(chatList);
         if (initialChat) {
@@ -128,7 +126,6 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
           if (targetIdx > -1) {
             setCurChat(chatList[targetIdx]);
           } else {
-            // targetIdx === -1
             const newChat: IChatItem = {
               receiverId: 0,
               name: "",
@@ -166,7 +163,7 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
     return () => {
       socket.current?.close();
     };
-  }, []); //! onMounted
+  }, []);
 
   const handleClickChat = (item: IChatItem) => {
     setHistoryMsgList([]);
@@ -183,7 +180,7 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
 
   useImperativeHandle(ref, () => {
     return { fetchChatList };
-  }); // defineExpose
+  });
 
   const doSend = (msg: ISendMsg) => {
     socket.current?.send(JSON.stringify(msg));
@@ -191,89 +188,87 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps /** props */) => {
   };
 
   return (
-    <>
-      <div className="flex h-dvh w-full">
-        <div className="bg-theme2 border-theme3 flex w-70 shrink-0 flex-col overflow-auto border-r">
-          <div className="p-3">
-            <SearchBar />
-          </div>
-          <div className="flex-1 overflow-auto">
-            {chatList.length === 0 ? (
-              <Empty className="mt-5" description="暂无聊天" />
-            ) : (
-              chatList.map((chat) => (
-                <div
-                  key={chat.roomKey}
-                  onClick={() => handleClickChat(chat)}
-                  className={`flex cursor-pointer items-center justify-between p-3 transition-colors hover:bg-[#d6e8d1] ${
-                    curChat?.roomKey === chat.roomKey ? "bg-[#cce3c5] hover:bg-[#cce3c5]" : ""
-                  }`}
-                >
-                  <ImgContainer
-                    src={chat.avatar}
-                    className="h-12 w-12 shrink-0 rounded object-cover"
-                  />
-                  <div className="ml-3 flex flex-1 flex-col justify-center overflow-hidden">
-                    <div className="truncate text-base font-medium text-gray-800">{chat.name}</div>
-                    <div className="truncate text-sm text-gray-500">
-                      {(() => {
-                        switch (chat.mediaType) {
-                          case "text":
-                            return chat.latestMsg;
-                          case "image":
-                            return "[图片]";
-                          case "video":
-                            return "[视频]";
-                          case "file":
-                            return "[文件]";
-                          default:
-                            return "";
-                        }
-                      })()}
+    <div className="flex h-dvh w-full">
+      <div className="border-surface-200 flex w-80 shrink-0 flex-col border-r bg-white">
+        <div className="p-4">
+          <SearchBar />
+        </div>
+        <div className="flex-1 overflow-auto">
+          {chatList.length === 0 ? (
+            <Empty className="mt-10" description="暂无聊天" />
+          ) : (
+            chatList.map((chat) => (
+              <div
+                key={chat.roomKey}
+                onClick={() => handleClickChat(chat)}
+                className={`flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors duration-150 ${
+                  curChat?.roomKey === chat.roomKey ? "bg-primary-50" : "hover:bg-surface-50"
+                }`}
+              >
+                <div className="relative shrink-0">
+                  <ImgContainer src={chat.avatar} className="h-12 w-12 rounded-xl object-cover" />
+                  {chat.unreadCnt !== 0 && (
+                    <div className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white shadow-sm">
+                      {chat.unreadCnt > 99 ? "99+" : chat.unreadCnt}
                     </div>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-surface-800 truncate text-sm font-medium">
+                      {chat.name}
+                    </span>
+                    <span className="text-surface-400 ml-2 shrink-0 text-xs">
+                      {fmtTime4list(chat.updatedAt)}
+                    </span>
                   </div>
-                  <div className="ml-2 flex flex-col items-end justify-between self-stretch py-1">
-                    <div className="text-xs text-gray-400">{fmtTime4list(chat.updatedAt)}</div>
-                    {chat.unreadCnt !== 0 && (
-                      <div className="mt-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
-                        {chat.unreadCnt > 99 ? "99+" : chat.unreadCnt}
-                      </div>
-                    )}
+                  <div className="text-surface-400 mt-0.5 truncate text-sm">
+                    {(() => {
+                      switch (chat.mediaType) {
+                        case "text":
+                          return chat.latestMsg;
+                        case "image":
+                          return "[图片]";
+                        case "video":
+                          return "[视频]";
+                        case "file":
+                          return "[文件]";
+                        default:
+                          return "";
+                      }
+                    })()}
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-        <div className="bg-theme flex flex-1 flex-col overflow-hidden">
-          {curChat ? (
-            <div className="flex h-dvh flex-col">
-              <div className="border-theme3 bg-theme flex h-16 items-center border-b px-6 text-lg font-medium">
-                {curChat.name}
               </div>
-              <div className="bg-theme flex-1 overflow-auto p-4">
-                <ChatMsg historyMsgList={historyMsgList} newMsgList={newMsgList} />
-              </div>
-              <div
-                className="border-theme3 border-t bg-white"
-                style={{ height: `${inputHeight}px` }}
-              >
-                <ChatUtils curChat={curChat} doSend={doSend} onMouseDownResize={handleMouseDown} />
-              </div>
-            </div>
-          ) : (
-            <div className="flex h-dvh items-center justify-center">
-              <MessageEmoji
-                theme="filled"
-                size="15rem"
-                fill="var(--color-theme5)"
-                strokeWidth={3}
-              />
-            </div>
+            ))
           )}
         </div>
       </div>
-    </>
+
+      <div className="bg-surface-50 flex flex-1 flex-col overflow-hidden">
+        {curChat ? (
+          <div className="flex h-dvh flex-col">
+            <div className="border-surface-200 flex h-14 shrink-0 items-center border-b bg-white px-6">
+              <span className="text-surface-800 text-base font-medium">{curChat.name}</span>
+            </div>
+            <div className="flex-1 overflow-auto p-5">
+              <ChatMsg historyMsgList={historyMsgList} newMsgList={newMsgList} />
+            </div>
+            <div
+              className="border-surface-200 border-t bg-white"
+              style={{ height: `${inputHeight}px` }}
+            >
+              <ChatUtils curChat={curChat} doSend={doSend} onMouseDownResize={handleMouseDown} />
+            </div>
+          </div>
+        ) : (
+          <div className="flex h-dvh flex-col items-center justify-center gap-4">
+            <MessageEmoji theme="filled" size="120" fill="#c7d2fe" strokeWidth={2} />
+            <span className="text-surface-400 text-sm">选择一个聊天开始对话</span>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

@@ -6,7 +6,7 @@ import { createRtc } from "./service/rtc.js";
 import { connChat } from "./service/chat.js";
 import type { OnlineUsers, ChatRooms, RtcRooms } from "./types.js";
 
-const port = 3000;
+const port = 3030;
 
 // Initialize global state
 globalThis.__online_users__ = {} as OnlineUsers;

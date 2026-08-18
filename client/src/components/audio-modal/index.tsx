@@ -363,7 +363,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="from-theme4 to-theme6 flex h-full w-full items-center justify-center rounded-full bg-linear-to-br">
+            <div className="from-primary-400 to-primary-600 flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br">
               <PeopleSpeak size="2.5rem" fill="#fff" />
             </div>
           )}
@@ -428,7 +428,7 @@ const AudioModal: React.FC<IProps> = (props: IProps) => {
                 />
               );
             })}
-            <p className="text-theme8 mb-6 text-lg font-medium">{formatCallTime(duration)}</p>
+            <p className="text-primary-600 mb-6 text-lg font-medium">{formatCallTime(duration)}</p>
             <div className="flex gap-8">
               <button
                 onClick={handleRejectCall}

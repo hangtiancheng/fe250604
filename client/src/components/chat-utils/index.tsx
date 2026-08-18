@@ -1,4 +1,3 @@
-import styles from "./index.module.scss";
 import { fetchGroupMembersApi } from "@/apis/group";
 import useToast from "@/hooks/use-toast";
 import useUserInfoStore from "@/store/user-info";
@@ -39,11 +38,11 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
   };
 
   const emojiContent = (
-    <div className="grid max-h-50 w-70 grid-cols-8 gap-1 overflow-y-auto p-1">
+    <div className="grid max-h-52 w-72 grid-cols-8 gap-0.5 overflow-y-auto p-2">
       {EmojiList.map((emoji, idx) => (
         <span
           key={idx}
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded text-lg hover:bg-gray-100"
+          className="hover:bg-surface-100 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-lg transition-colors"
           onClick={() => handleSelectEmoji(emoji)}
         >
           {emoji}
@@ -54,7 +53,7 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
 
   const friendOrGroup = (item: IChatItem) => Boolean(item.receiverEmail);
 
-  const changeInputValue = (ev: ChangeEvent<HTMLTextAreaElement> /** React.ChangeEvent */) => {
+  const changeInputValue = (ev: ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(ev.target.value);
   };
 
@@ -177,61 +176,57 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
   };
 
   return (
-    <div className="relative flex h-full flex-col p-4">
-      {/* 顶部可拖拽边缘 */}
+    <div className="relative flex h-full flex-col px-4 py-3">
       <div
-        className="hover:bg-theme5 absolute top-0 right-0 left-0 z-10 h-0.5 cursor-row-resize opacity-0 transition-opacity hover:opacity-100"
+        className="hover:bg-primary-200 absolute top-0 right-0 left-0 z-10 h-1 cursor-row-resize transition-colors"
         onMouseDown={onMouseDownResize}
       />
-      <div className="flex flex-1 items-center justify-between">
-        <ul className="flex items-center gap-3">
-          {MsgIconList.slice(0, 3).map((item, idx) => {
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          {MsgIconList.slice(0, 3).map((item) => {
             if (item.key === "WinkingFace") {
               return (
-                <li key={item.key}>
-                  <Popover
-                    content={emojiContent}
-                    trigger="click"
-                    open={showEmojiPicker}
-                    onOpenChange={setShowEmojiPicker}
-                    placement="topLeft"
-                  >
-                    <Tooltip placement="top" title={item.title} arrow={false}>
-                      <item.IconInst size={"1.5rem"} className="cursor-pointer" />
-                    </Tooltip>
-                  </Popover>
-                </li>
+                <Popover
+                  key={item.key}
+                  content={emojiContent}
+                  trigger="click"
+                  open={showEmojiPicker}
+                  onOpenChange={setShowEmojiPicker}
+                  placement="topLeft"
+                >
+                  <Tooltip placement="top" title={item.title} arrow={false}>
+                    <div className="text-surface-500 hover:bg-surface-100 hover:text-surface-700 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors">
+                      <item.IconInst size="18" />
+                    </div>
+                  </Tooltip>
+                </Popover>
               );
             }
             return (
-              <li key={item.key}>
-                <Tooltip
-                  placement={idx === 0 ? "top" : "bottomLeft"}
-                  title={item.title}
-                  arrow={false}
+              <Tooltip key={item.key} placement="top" title={item.title} arrow={false}>
+                <div
+                  onClick={() => handleClickIcon(item.key as MsgIconKey)}
+                  className="text-surface-500 hover:bg-surface-100 hover:text-surface-700 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors"
                 >
-                  <item.IconInst
-                    onClick={() => handleClickIcon(item.key as MsgIconKey)}
-                    size={"1.5rem"}
-                  />
-                </Tooltip>
-              </li>
+                  <item.IconInst size="18" />
+                </div>
+              </Tooltip>
             );
           })}
-        </ul>
+        </div>
 
-        <ul className="flex items-center gap-3">
+        <div className="flex items-center gap-1">
           {MsgIconList.slice(3).map((item) => (
-            <li key={item.key}>
-              <Tooltip placement="bottomLeft" title={item.title} arrow={false}>
-                <item.IconInst
-                  onClick={() => handleClickIcon(item.key as MsgIconKey)}
-                  size={"1.5rem"}
-                />
-              </Tooltip>
-            </li>
+            <Tooltip key={item.key} placement="top" title={item.title} arrow={false}>
+              <div
+                onClick={() => handleClickIcon(item.key as MsgIconKey)}
+                className="text-surface-500 hover:bg-surface-100 hover:text-surface-700 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors"
+              >
+                <item.IconInst size="18" />
+              </div>
+            </Tooltip>
           ))}
-        </ul>
+        </div>
 
         <input
           type="file"
@@ -240,7 +235,6 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
           onChange={(ev) => sendFile(ev)}
           className="hidden"
         />
-
         <input
           type="file"
           accept="*"
@@ -249,21 +243,31 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
           className="hidden"
         />
       </div>
-      <div className={`flex-4 ${styles.textareaWrapper} mt-2`}>
-        <Spin spinning={isLoading} tip="消息发送中...">
+
+      <div className="mt-2 flex-1">
+        <Spin spinning={isLoading} tip="发送中...">
           <textarea
             onChange={(ev) => changeInputValue(ev)}
             value={inputValue}
-            className="focus:border-theme5 focus:ring-theme5 h-full w-full resize-none rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-800 transition-colors outline-none focus:ring-1"
+            onKeyDown={(ev) => {
+              if (ev.key === "Enter" && !ev.shiftKey) {
+                ev.preventDefault();
+                sendText();
+              }
+            }}
+            placeholder="输入消息，Enter 发送，Shift+Enter 换行"
+            className="border-surface-200 bg-surface-50 text-surface-800 placeholder:text-surface-400 focus:border-primary-300 focus:ring-primary-100 h-full w-full resize-none rounded-xl border p-3 text-sm transition-colors outline-none focus:bg-white focus:ring-2"
           />
         </Spin>
       </div>
-      <div className="flex flex-1 items-center justify-end">
-        <Button type="primary" onClick={sendText}>
+
+      <div className="flex items-center justify-end pt-2">
+        <Button type="primary" onClick={sendText} className="rounded-lg shadow-sm">
           发送
         </Button>
       </div>
-      {mountAudioModal && callReceiverList.length && (
+
+      {mountAudioModal && callReceiverList.length > 0 && (
         <AudioModal
           mountModal={mountAudioModal}
           setMountModal={setMountAudioModal}
@@ -273,7 +277,7 @@ const ChatUtils: React.FC<IProps> = (props: IProps) => {
           state="initial"
         />
       )}
-      {mountVideoModal && callReceiverList.length && (
+      {mountVideoModal && callReceiverList.length > 0 && (
         <VideoModal
           mountModal={mountVideoModal}
           setMountModal={setMountVideoModal}

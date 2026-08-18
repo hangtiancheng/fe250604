@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import ImgContainer from "../img-container";
 
 interface IProps {
-  onUploadOk: (filePath: string) => void; // 图片上传成功的回调
+  onUploadOk: (filePath: string) => void;
   initialImgUrl?: string;
 }
 const ImgUploader: React.FC<IProps> = (props) => {
@@ -25,7 +25,7 @@ const ImgUploader: React.FC<IProps> = (props) => {
       return;
     }
     try {
-      const res = await uploadFile(img, 5 /** chunkSize */);
+      const res = await uploadFile(img, 5);
       if (res.done && res.filePath) {
         setImgUrl(res.filePath);
         onUploadOk(res.filePath);
@@ -41,11 +41,11 @@ const ImgUploader: React.FC<IProps> = (props) => {
   };
 
   const UploadBtn = (
-    <div>
+    <div className="border-surface-300 hover:border-primary-400 flex h-20 w-20 items-center justify-center rounded-xl border-2 border-dashed transition-colors">
       {isLoading ? (
-        <Rotation theme="filled" size="32" fill="var(--color-theme5)" strokeWidth={3} />
+        <Rotation theme="filled" size="24" fill="#6366f1" strokeWidth={3} />
       ) : (
-        <Plus theme="filled" size="32" fill="var(--color-theme5)" strokeWidth={3} />
+        <Plus theme="filled" size="24" fill="#94a3b8" strokeWidth={3} />
       )}
     </div>
   );
@@ -65,7 +65,11 @@ const ImgUploader: React.FC<IProps> = (props) => {
         accept="image/*"
         maxCount={1}
       >
-        {imgUrl ? <ImgContainer src={imgUrl} /> : UploadBtn}
+        {imgUrl ? (
+          <ImgContainer src={imgUrl} className="h-20 w-20 rounded-xl object-cover" />
+        ) : (
+          UploadBtn
+        )}
       </Upload>
     </div>
   );

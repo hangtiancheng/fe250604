@@ -53,10 +53,9 @@ const UserInfoModal: React.FC<IProps> = (props: IProps) => {
           toast.success("用户信息更新成功");
           setMountModal(false);
           const { token, userInfo } = res.data;
-          // todo await?
-          writeLocal(token, userInfo); // localStorage
-          userInfoStore.setUserInfo(userInfo); // sessionStorage
-          tokenStore.setToken(token); // sessionStorage
+          writeLocal(token, userInfo);
+          userInfoStore.setUserInfo(userInfo);
+          tokenStore.setToken(token);
         } else {
           toast.error("用户信息更新失败");
         }
@@ -77,39 +76,37 @@ const UserInfoModal: React.FC<IProps> = (props: IProps) => {
   }, []);
 
   return (
-    <>
-      <Modal
-        open={mountModal}
-        onOk={handleUpdateUserInfo}
-        confirmLoading={isLoading}
-        onCancel={() => setMountModal(false)}
-      >
-        <div>
-          <ImgUploader
-            onUploadOk={
-              (filePath) =>
-                userInfoFormInst.setFieldValue(
-                  "avatar",
-                  filePath,
-                ) /** userInfoFormInst.setFieldsValue({ avatar: filePath }) */
-            }
-          />
-          <div>
-            <div>{userInfo.username}</div>
-            <div>{userInfo.signature?.length ? userInfo.signature : "这个人很神秘, 没有签名"}</div>
+    <Modal
+      title="修改资料"
+      open={mountModal}
+      onOk={handleUpdateUserInfo}
+      confirmLoading={isLoading}
+      onCancel={() => setMountModal(false)}
+      okText="保存"
+      cancelText="取消"
+    >
+      <div className="mt-4 flex items-center gap-4">
+        <ImgUploader
+          initialImgUrl={userInfo.avatar}
+          onUploadOk={(filePath) => userInfoFormInst.setFieldValue("avatar", filePath)}
+        />
+        <div className="min-w-0">
+          <div className="text-surface-800 text-base font-medium">{userInfo.username}</div>
+          <div className="text-surface-400 mt-0.5 truncate text-sm">
+            {userInfo.signature?.length ? userInfo.signature : "这个人很神秘, 没有签名"}
           </div>
         </div>
+      </div>
 
-        <Form form={userInfoFormInst}>
-          <Form.Item name="username" rules={[{ required: true, message: "请输入新用户名" }]}>
-            <Input placeholder="请输入新用户名" />
-          </Form.Item>
-          <Form.Item name="signature" rules={[{ required: true, message: "请输入新签名" }]}>
-            <Input placeholder="请输入新签名" />
-          </Form.Item>
-        </Form>
-      </Modal>
-    </>
+      <Form form={userInfoFormInst} className="mt-6">
+        <Form.Item name="username" rules={[{ required: true, message: "请输入新用户名" }]}>
+          <Input placeholder="用户名" />
+        </Form.Item>
+        <Form.Item name="signature" rules={[{ required: true, message: "请输入新签名" }]}>
+          <Input placeholder="个性签名" />
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 };
 
