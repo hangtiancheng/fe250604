@@ -43,15 +43,15 @@ export default function Register() {
   };
 
   return (
-    <div className="from-surface-900 via-surface-800 to-primary-950 flex h-dvh w-dvw items-center justify-center bg-gradient-to-br">
+    <div className="from-primary-50 to-primary-100 flex h-dvh w-dvw items-center justify-center bg-gradient-to-br via-white">
       <div className="absolute inset-0 overflow-hidden">
-        <div className="bg-primary-500/10 absolute -top-40 -right-40 h-96 w-96 rounded-full blur-3xl" />
-        <div className="bg-primary-400/10 absolute -bottom-40 -left-40 h-96 w-96 rounded-full blur-3xl" />
+        <div className="bg-primary-200/30 absolute -top-40 -right-40 h-96 w-96 rounded-full blur-3xl" />
+        <div className="bg-primary-100/40 absolute -bottom-40 -left-40 h-96 w-96 rounded-full blur-3xl" />
       </div>
 
-      <div className="shadow-float relative w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-10 backdrop-blur-xl">
+      <div className="shadow-float border-primary-100 relative w-full max-w-md rounded-2xl border bg-white/80 p-10 backdrop-blur-xl">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight text-white">创建账号</h1>
+          <h1 className="text-surface-800 text-3xl font-semibold tracking-tight">创建账号</h1>
           <p className="text-surface-400 mt-2 text-sm">注册一个新账号，开始聊天</p>
         </div>
 
@@ -63,11 +63,7 @@ export default function Register() {
               { max: 30, message: "邮箱最多 30 个字符" },
             ]}
           >
-            <Input
-              placeholder="邮箱地址"
-              maxLength={30}
-              className="placeholder:text-surface-500 rounded-lg border-white/10 bg-white/5 text-white"
-            />
+            <Input placeholder="邮箱地址" maxLength={30} className="rounded-lg" />
           </Form.Item>
           <Form.Item
             name="password"
@@ -76,12 +72,7 @@ export default function Register() {
               { max: 15, message: "密码最多 15 个字符" },
             ]}
           >
-            <Input
-              placeholder="密码"
-              maxLength={15}
-              type="password"
-              className="placeholder:text-surface-500 rounded-lg border-white/10 bg-white/5 text-white"
-            />
+            <Input placeholder="密码" maxLength={15} type="password" className="rounded-lg" />
           </Form.Item>
           <Form.Item
             name="confirmPwd"
@@ -90,12 +81,7 @@ export default function Register() {
               { max: 15, message: "密码最多 15 个字符" },
             ]}
           >
-            <Input
-              placeholder="确认密码"
-              maxLength={15}
-              type="password"
-              className="placeholder:text-surface-500 rounded-lg border-white/10 bg-white/5 text-white"
-            />
+            <Input placeholder="确认密码" maxLength={15} type="password" className="rounded-lg" />
           </Form.Item>
           <Form.Item className="mb-4">
             <Button

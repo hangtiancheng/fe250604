@@ -151,7 +151,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="flex h-dvh w-dvw">
-      <div className="bg-sidebar flex w-[68px] shrink-0 flex-col items-center justify-between py-5">
+      <div className="bg-sidebar border-surface-200 flex w-[68px] shrink-0 flex-col items-center justify-between border-r py-5">
         <div className="flex w-full flex-col items-center gap-2">
           <Popover content={UserInfoContent} placement="right" trigger="click">
             <div className="hover:bg-sidebar-hover mb-4 flex cursor-pointer items-center justify-center rounded-xl p-1.5 transition-colors">
@@ -164,8 +164,8 @@ const Home: React.FC = () => {
                 onClick={() => handleClickIcon(item)}
                 className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl transition-all duration-200 ${
                   curIconKey === item.key
-                    ? "bg-sidebar-active text-primary-300"
-                    : "text-surface-500 hover:bg-sidebar-hover hover:text-surface-300"
+                    ? "bg-sidebar-active text-primary-500"
+                    : "text-surface-400 hover:bg-sidebar-hover hover:text-surface-600"
                 }`}
               >
                 <item.IconInst size="22" strokeWidth={3} />

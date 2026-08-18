@@ -263,7 +263,7 @@ const Chat: React.FC<IProps> = ({ ref, initialChat }: IProps) => {
           </div>
         ) : (
           <div className="flex h-dvh flex-col items-center justify-center gap-4">
-            <MessageEmoji theme="filled" size="120" fill="#c7d2fe" strokeWidth={2} />
+            <MessageEmoji theme="filled" size="120" fill="#fbcfe8" strokeWidth={2} />
             <span className="text-surface-400 text-sm">选择一个聊天开始对话</span>
           </div>
         )}

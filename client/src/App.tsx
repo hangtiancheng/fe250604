@@ -26,12 +26,12 @@ export default function App() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#6366f1",
+          colorPrimary: "#ec4899",
           borderRadius: 10,
           colorBgContainer: "#ffffff",
-          colorBorder: "#e2e8f0",
-          colorText: "#1e293b",
-          colorTextSecondary: "#64748b",
+          colorBorder: "#f8e8ec",
+          colorText: "#3d2832",
+          colorTextSecondary: "#a07886",
           fontFamily:
             '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
         },

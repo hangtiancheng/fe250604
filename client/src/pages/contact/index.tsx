@@ -553,7 +553,7 @@ const Contact: React.FC<IProps> = ({ ref, doChat }: IProps) => {
         )}
         {!curFriend && !curGroup && (
           <div className="flex flex-col items-center gap-4">
-            <MessageEmoji theme="filled" size="120" fill="#c7d2fe" strokeWidth={2} />
+            <MessageEmoji theme="filled" size="120" fill="#fbcfe8" strokeWidth={2} />
             <span className="text-surface-400 text-sm">选择一个好友或群聊查看详情</span>
           </div>
         )}

@@ -75,7 +75,7 @@ const MsgBubble: React.FC<IProps> = (props: IProps) => {
           <div
             className={`max-w-md rounded-2xl px-4 py-2.5 text-sm leading-relaxed wrap-break-word ${
               isSelf
-                ? "bg-primary-500 rounded-br-md text-white"
+                ? "bg-primary-100 text-surface-800 rounded-br-md"
                 : "border-surface-200 text-surface-800 rounded-bl-md border bg-white shadow-sm"
             }`}
           >

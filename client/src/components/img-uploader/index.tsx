@@ -43,7 +43,7 @@ const ImgUploader: React.FC<IProps> = (props) => {
   const UploadBtn = (
     <div className="border-surface-300 hover:border-primary-400 flex h-20 w-20 items-center justify-center rounded-xl border-2 border-dashed transition-colors">
       {isLoading ? (
-        <Rotation theme="filled" size="24" fill="#6366f1" strokeWidth={3} />
+        <Rotation theme="filled" size="24" fill="#ec4899" strokeWidth={3} />
       ) : (
         <Plus theme="filled" size="24" fill="#94a3b8" strokeWidth={3} />
       )}
